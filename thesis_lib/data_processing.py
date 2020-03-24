@@ -82,7 +82,10 @@ def load_columns(column_type):
         return  ['no_of_studies','age','admission_year','discharge_year',
                 'admission_lenght_days','new_born_gestation_age','surgery_delay',
                 'no_of_surgeries','no._of_assistans', 'no._of_pregnancies',
-                'no._births', 'no._of_cesarean']
+                'no._births', 'no._of_cesarean', 'estimated_duration',
+                 'pre_surgery_duration','surgery_duration','post_surgery_duration',
+                 'surgery_prep_duration']
+    
     elif column_type == 'date':
         return ['labo_date', 'admission_date', 'discharge_date','image_date',
                  'birth_date','pre_discharge_date','date_registered_discharge',
@@ -93,10 +96,9 @@ def load_columns(column_type):
         
         return ['labo_time','image_time','admission_time','discharge_time',
                  'time_registered_discharge','surgery_scheduled_time', 
-                 'surgery_startime','surgery_endtime','estimated_duration',
+                 'surgery_startime','surgery_endtime',
                  'entry_time', 'exit_time','anesthesia_startime', 
-                 'anesthesia_endtime','pre_surgery_duration','surgery_duration',
-                 'post_surgery_duration', 'surgery_prep_duration',
+                 'anesthesia_endtime',
                  'sector_admission_time']
 
 def format_integer_col(df,col):
