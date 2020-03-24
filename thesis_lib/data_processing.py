@@ -92,26 +92,34 @@ def load_columns(column_type):
                  'emergency_admission_datetime','previous_admission_date',
                  'previous_discharge_date','surgery_date',
                  'sector_admission_date']
-    elif column_type == 'time':
-        
+    
+    elif column_type == 'time':   
         return ['labo_time','image_time','admission_time','discharge_time',
                  'time_registered_discharge','surgery_scheduled_time', 
                  'surgery_startime','surgery_endtime',
                  'entry_time', 'exit_time','anesthesia_startime', 
                  'anesthesia_endtime',
                  'sector_admission_time']
+    
+    elif column_type == 'datetime':
+         return ['sector_admission_datetime','admission_datetime','discharge_datetime']
 
 def format_integer_col(df,col):
     
     return df[col].fillna(0.0).astype(int,errors='ignore')
 
-def format_datetime_col(df,col,date_format=None):
+def format_date_col(df,col,date_format=None):
     
     if date_format != None: 
         return pd.to_datetime(df[col] , errors='ignore', format=date_format).dt.date
     else:
         return pd.to_datetime(df[col] , errors='ignore').dt.date
-
+    
+def format_datetime_col(df,col):
+    
+    return pd.to_datetime(df[col] , errors='ignore')
+  
+  
         
 def format_time_col(df,col):
     
@@ -156,9 +164,9 @@ def load_parquet(parquets_folder,file=None):
             if col in db[df].columns:
                 
                 if df == 'laboratory':
-                    db[df][col] = format_datetime_col(db[df],col,date_format="%d/%m/%Y")
+                    db[df][col] = format_date_col(db[df],col,date_format="%d/%m/%Y")
                 else: 
-                    db[df][col] = format_datetime_col(db[df],col)
+                    db[df][col] = format_date_col(db[df],col)
     
     print('Formating time columns')
     for col in load_columns('time'):
@@ -167,6 +175,14 @@ def load_parquet(parquets_folder,file=None):
             if col in db[df].columns:
                 
                 db[df][col] = format_time_col(db[df],col)
+                
+    print('Formating datetime columns')
+    for col in load_columns('datetime'):
+        
+        for df in db:
+            if col in db[df].columns:
+        
+                db[df][col] = format_datetime_col(db[df],col)
     
     
     return (db if not file else db[file])
