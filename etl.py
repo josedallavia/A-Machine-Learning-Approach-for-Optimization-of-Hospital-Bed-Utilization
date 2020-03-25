@@ -62,7 +62,7 @@ def main(directory):
             
             i += 1
             if i % 10 == 0:
-                pbar.update(100)
+                pbar.update(10)
                 print(i, 'clinic history files generated')
                 print(len(patients)-i, 'patients remaining to be proccessed')
 
