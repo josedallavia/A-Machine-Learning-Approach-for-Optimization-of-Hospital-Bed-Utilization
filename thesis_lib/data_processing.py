@@ -188,7 +188,11 @@ def load_parquet(parquets_folder,file=None):
     return (db if not file else db[file])
     
         
-        
+def cast_list(list_to_cast):
+    str_list = [str(i) for i in list_to_cast]
+    
+    return (',').join(str_list)
+            
         
 
     
