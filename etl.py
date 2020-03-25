@@ -20,7 +20,11 @@ def main(directory):
     
     #Extract
     all_data = load_parquet('parquet_data')
-    patients = sorted(all_data['hospitalizations'].patient_id.unique())
+    patients = sorted(
+                    [patient for patient 
+                    in all_data['hospitalizations'].patient_id.unique()
+                    if '/' not in patient
+                    ])
     
 
     try:
@@ -35,15 +39,23 @@ def main(directory):
     with tqdm(total=len(patients)) as pbar:
         i = 0
         for patient_id in patients:
-            patient = Patient(patient_id)
-            patient.load_patient_data(all_data)
-            patient_clinic_history = patient.get_historic_records()
-
-            parquet = pa.Table.from_pandas(patient_clinic_history)
+            print('Patient_id #:',patient_id)
+            filename = directory+'/patient_id_'+patient_id+'.parquet'
             
-            #Load
-            pq.write_table(parquet, directory+'/patient_id_'+patient_id+'.parquet')
-            print(patient_id+' clinic history saved') 
+            if not os.path.isfile(filename):
+                patient = Patient(patient_id)
+                print('\t Processing patient data')
+                patient.load_patient_data(all_data)
+                patient_clinic_history = patient.get_historic_records()
+
+                parquet = pa.Table.from_pandas(patient_clinic_history)
+            
+                #Load
+                pq.write_table(parquet, filename )
+                print('\t Patient clinic history saved') 
+            else:
+                print('\t clinic history already saved') 
+                
             
             i += 1
             if i % 100 == 0:
