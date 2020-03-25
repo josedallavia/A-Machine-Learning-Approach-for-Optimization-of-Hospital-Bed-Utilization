@@ -6,6 +6,8 @@ PSA: Data will not be published as it was provided by a medical center instituti
 
 # Table of contents
 
-* [thesis_lib](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/thesis_lib)
+* [pre-work] https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/Pre-work
 
 * [ETL](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/etl.py)
+
+* [thesis_lib](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/thesis_lib)
