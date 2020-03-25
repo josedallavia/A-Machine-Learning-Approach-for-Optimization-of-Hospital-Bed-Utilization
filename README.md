@@ -4,7 +4,7 @@ This project objetive is to build a ML model that allows a hospital to understan
 
 PSA: Data will not be published as it was provided by a medical center institution under a Non-Disclosure-Agreement. 
 
-# Table of contents
+### Table of contents
 
 * [Pre-work](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/Pre-work)
 
