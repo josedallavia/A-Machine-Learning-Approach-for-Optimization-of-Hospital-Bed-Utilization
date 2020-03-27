@@ -114,6 +114,17 @@ class Admission():
     def process_sectors_data(self, patient):
         
         adm_sectors_data = patient.sectors_data[patient.sectors_data.admission_id == self.admission_id]
+        
+        if len(adm_sectors_data) == 0:
+            adm_sectors_data = pd.DataFrame([{'admission_id': self.admission_id, 
+                                'patient_id': patient.patient_id, 
+                                'sector_admission_date': self.admission_data['admission_date'],
+                                'sector_admission_time': self.admission_data['admission_time'],
+                                'sector_code': None, 
+                                'category': None,
+                                'sector_admission_datetime': pd.to_datetime(self.admission_data['admission_datetime'],
+                                                                            errors='ignore')}])
+                                
         adm_sectors_data['sector_stay'] = adm_sectors_data['sector_admission_datetime'
                                                           ].diff(periods=1).astype(
                                                                         'timedelta64[m]'
