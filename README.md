@@ -10,8 +10,15 @@ PSA: Data will not be published as it was provided by a health center under a No
 
 
 
-* [ETL](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL)
+* [ETL:](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL)
+
+Contains the code used for some preprocessing we perfomed on the raw data as well as a the program that allows to generate all  patient historics records. All patients historic records consists of a dataset containining one row per day a patient was hospitalized, containing all the available data for that patient upto that very same date. 
 
 * [thesis_lib](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/thesis_lib)
 
+This module contains functions and classes that were exclusively created to work with this project. 
+
 * [Exploration](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/Exploratory.ipynb)
+
+In this notebook the different datasets provided by the medical institution are explored with the intention of getting a general understanding of the information we have at our disposal.
+
