@@ -8,8 +8,10 @@ PSA: Data will not be published as it was provided by a health center under a No
 
 ### Table of contents
 
-* [Pre-work](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/Pre-work)
 
-* [ETL](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/etl.py)
+
+* [ETL](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL)
 
 * [thesis_lib](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/thesis_lib)
+
+* [Exploration](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/Exploratory.ipynb)
