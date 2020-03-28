@@ -10,7 +10,7 @@ PSA: Data will not be published as it was provided by a health center under a No
 
 
 
-* [ETL:](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL)
+* [ETL](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL)
 
 Contains the code used for some preprocessing we perfomed on the raw data as well as a the program that allows to generate all  patient historics records. All patients historic records consists of a dataset containining one row per day a patient was hospitalized, containing all the available data for that patient upto that very same date. 
 
