@@ -16,7 +16,7 @@ Contains the code used for some preprocessing we perfomed on the raw data as wel
 
 * [thesis_lib](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/thesis_lib)
 
-This module contains functions and classes that were exclusively created to work with this project. 
+This library contains functions and classes that were exclusively created to work with this project. So far it consists of three modules: visualize, data_processing and hospital_classes.
 
 * [Exploration](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/Exploratory.ipynb)
 
