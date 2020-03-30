@@ -5,9 +5,8 @@ import matplotlib.pyplot as plt
 from datetime import timedelta
 from random import random
 import numpy as np
-
-
-
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath('thesis_lib'))))
 
 def process_raw_files(origin_folder, destination_folder):
     

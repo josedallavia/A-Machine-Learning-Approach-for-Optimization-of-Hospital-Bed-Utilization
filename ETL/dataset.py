@@ -12,8 +12,7 @@ import matplotlib.pyplot as plt
 from random import random
 import numpy as np 
 
-from thesis_lib.data_processing import *
-from thesis_lib.data_processing import *
+from etl_helpers.data_processing import *
 from thesis_lib.hospital_classes import *
 
 from datetime import timedelta
