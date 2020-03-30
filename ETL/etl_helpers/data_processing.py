@@ -42,12 +42,20 @@ def process_raw_files(origin_folder, destination_folder):
 def get_database(folder):  
       
     path= folder+'/'
+    
+    filenames_dict = {'labos': 'laboratory',
+                     'images': 'images',
+                     'sectores': 'sectors',
+                     'internaciones':'hospitalizations',
+                     'ingresos_sectores':'sectors_admissions',
+                     'cirugias': 'surgeries'}
+    
     db = {}
     
     for r, d, f in os.walk(path):
         for file in f:
             if 'csv' in file:
-                df_name = file[:-4]
+                df_name = filenames_dict[file[:-4]]
                 print('Loading dataset: ',df_name)
                 db[df_name] = pd.read_csv(path+file)
     return db
