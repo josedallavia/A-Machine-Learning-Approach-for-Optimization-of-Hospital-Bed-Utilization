@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import shutil
 import sys 
-pd.set_option('display.max_columns', None)  
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath('thesis_lib'))))
 from etl_helpers.data_processing import *
 from thesis_lib.visual import *
 import warnings
