@@ -47,7 +47,6 @@ class Patient:
         if hasattr(self, 'hospitalizations_data'):
             return {admission_key(admission_number,admission_id) : Admission(admission_id, self) 
                    for admission_number, admission_id in enumerate(self.hospitalizations_data.admission_id)}
-        
         else:
             print('Load patient data before')
     
@@ -75,24 +74,19 @@ class Admission():
         self.admission_id = admission_id
         
         self.load_admission_data(patient)
-   
 
-        
     def load_admission_data(self,patient): 
         
         self.admission_data = self.process_hospitalization_data(patient)
-        
         self.discharge_datetime = datetime.strptime(str(self.admission_data['discharge_datetime']), 
                                                     '%Y-%m-%d %H:%M:%S')
         self.admission_datetime = datetime.strptime(str(self.admission_data['admission_datetime']),
                                                    '%Y-%m-%d %H:%M:%S')
-        
         self.laboratory_data = self.process_laboratory_data(patient)                                         
         self.images_data = self.process_images_data(patient)
         self.surgeries_data = self.process_surgeries_data(patient)
         self.sectors_data = self.process_sectors_data(patient)
 
-        
     def process_hospitalization_data(self, patient):
         
         return patient.hospitalizations_data[
@@ -138,7 +132,6 @@ class Admission():
         
         return adm_sectors_data
     
-
     def get_labos_date_records(self,date):
         
         labos_records = {}
@@ -203,7 +196,6 @@ class Admission():
 
         return surgeries_records 
     
-    
     def get_date_sectors(self, date):
         
         if len(self.sectors_data) > 0:
@@ -216,7 +208,7 @@ class Admission():
                 rv = self.get_date_sectors(date-timedelta(days=1))
                 
             return rv
-
+            
         else:
             print('No sectors data available!')
             
@@ -241,12 +233,10 @@ class Admission():
     
         return sectors_records 
         
-        
     def get_admission_records(self, row):
         
         length_of_stay = (self.admission_data['discharge_date']-
                           self.admission_data['admission_date']).days
-        
         df = pd.DataFrame()
         
         row['labos_cumulative'] =  0
@@ -258,23 +248,19 @@ class Admission():
             row['date'] = self.admission_data['admission_date'] + timedelta(day)
             row['hosp_day_number'] =  day
             row['discharge'] =  (True if day == (length_of_stay -1) else False)
-            
             #Labos 
             labos_records = self.get_labos_date_records(row['date'])
             row.update(labos_records)
             row['labos_cumulative'] += row['labos_count']
             row['labos_set_cumulative'] += row['labos_set_count']
-            
             #Images
             images_records = self.get_images_date_records(row['date'])
             row.update(images_records)
             row['images_cumulative'] += row['images_count']
-            
             #Surgeries
             surgeries_records = self.get_surgeries_date_records(row['date'])
             row.update(surgeries_records)
             row['surgeries_cumulative'] += row['surgeries_count']
-            
             #Sectors
             sectors_records = self.get_sectors_date_records(row['date'])
             row.update(sectors_records)

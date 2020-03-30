@@ -18,16 +18,13 @@ def process_raw_files(origin_folder, destination_folder):
     except:
         pass
 
-    # r=root, d=directories, f = files
     for r, d, f in os.walk(path):
         for file in f:
             if '.DS_Store' not in file:
                 print(file)
                 if 'xlsx' in file:
-                    
                     #Read excel file
                     df = pd.read_excel(os.path.join(r, file))
-                    
                     #Convert to csv with ',' separator
                     new_file_name = destination_folder+'/'+file[:-4]+'csv'
                     df.to_csv(new_file_name, sep=',', index=False)
@@ -35,7 +32,6 @@ def process_raw_files(origin_folder, destination_folder):
                     print(file+' successfully converted to csv: '+new_file_name)
 
                 elif 'csv' in file:
-                    
                     #Read csv file 
                     df = pd.read_csv(os.path.join(r, file), sep=';')
                     
@@ -44,7 +40,8 @@ def process_raw_files(origin_folder, destination_folder):
                     df.to_csv(new_file_name, sep=',', index=False)
                     print(file+' successfully copied to '+new_file_name)
 
-def get_database(folder):    
+def get_database(folder):  
+      
     path= folder+'/'
     db = {}
     
@@ -54,15 +51,12 @@ def get_database(folder):
                 df_name = file[:-4]
                 print('Loading dataset: ',df_name)
                 db[df_name] = pd.read_csv(path+file)
-    
-    
     return db
     
     
 def get_variables_ref_lists(db):
     
     directory = "VariableReferences"
-  
   
     # Path 
     path = os.path.join(os.getcwd(), directory) 
@@ -123,8 +117,6 @@ def format_datetime_col(df,col):
     
     return pd.to_datetime(df[col] , errors='ignore')
   
-  
-        
 def format_time_col(df,col):
     
     return pd.to_datetime(df[col], errors='ignore').dt.time
@@ -154,14 +146,12 @@ def load_parquet(parquets_folder,file=None):
                         db[df_name] = pd.read_parquet(path+filename)
                         print('\t',len(db[df_name]))
                             
-    
             print('Formating integer columns')
             for col in load_columns('integer'):
                 for df in db:
                     if col in db[df].columns:
                         db[df][col] = format_integer_col(db[df],col)
           
-
             print('Formating date columns')
             for col in load_columns('date'):
                 for df in db:
@@ -183,16 +173,16 @@ def load_parquet(parquets_folder,file=None):
                     if col in db[df].columns:
                         db[df][col] = format_datetime_col(db[df],col)
     
-    
             return (db if not file else db[file])
     
-        
 def cast_list(list_to_cast):
+    
     str_list = [str(i) for i in list_to_cast]
     
     return (',').join(str_list)
             
-def get_clinic_histories(folder, sample_prop=1):    
+def get_clinic_histories(folder, sample_prop=1):   
+     
     path= folder+'/'
     df = pd.DataFrame()
     
@@ -220,8 +210,6 @@ def add_static_variables(df, static_level, vars_list, hosp_data):
     for var in vars_list:
         var_dict = { data_point[0]: data_point[1] for data_point in  
                          hosp_data[[static_level,var]].groupby([static_level,var]).nunique().axes[0]} 
-
-
         df[var] = df[static_level].apply(lambda x: var_dict[x] if x in var_dict else None)
         
     return df
@@ -251,8 +239,7 @@ def generate_train_val_test_sets(df, directory):
     print('\tFrom:', val_data.date.min(), 'to: s',val_data.date.max())
     
     val_data.to_parquet(directory+'/hospital_val_data.parquet')
-    #print('Validation set saved in: ', directory+'/hospital_val_data.parquet')
-    
+    print('Validation set saved in: ', directory+'/hospital_val_data.parquet')
     
     print('Generating test set')
     test_data = test_data[test_data['tmp_col'] > 0.5]

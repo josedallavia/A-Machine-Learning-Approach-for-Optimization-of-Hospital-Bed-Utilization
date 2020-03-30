@@ -29,7 +29,6 @@ def main(directory):
                     
     print(str(len(patients))+' patients clinic histories will be processed')
     
-
     try:
         os.mkdir(directory)
         print(directory, 'was created')
@@ -56,10 +55,10 @@ def main(directory):
                 #Load
                 pq.write_table(parquet, filename )
                 print('\t Patient clinic history saved') 
+                
             else:
                 print('\t clinic history already saved') 
                 
-            
             i += 1
             if i % 10 == 0:
                 pbar.update(10)

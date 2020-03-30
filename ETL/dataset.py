@@ -27,8 +27,6 @@ from tqdm import tqdm
 
 def main(directory,origin_directory,prop=1):
     
-    
-    
     if path.exists(directory):
         print('Oops. The specified directory already exists')
     else:
@@ -40,17 +38,14 @@ def main(directory,origin_directory,prop=1):
         #Get patient clinic records
         docs = get_clinic_histories(origin_directory+'/patients_clinic_histories', prop)
         
-
         #Saved temporarily 
         docs.to_parquet(directory+'/patients_records_tmp.parquet')
        
-    
         #Add patient static variables to dataset
         hospitalizations = load_parquet(origin_directory+'/parquet_data', 'hospitalizations')
         
         print('Adding patient static variables')
         patient_static_vars = ['birth_date','gender']
-        
                                            
         df = add_static_variables(docs, 'patient_id', patient_static_vars, hospitalizations)
     
@@ -80,7 +75,6 @@ def main(directory,origin_directory,prop=1):
                         
         df = add_static_variables(df, 'admission_id', adm_static_vars , hospitalizations)
     
-    
         #Compute uptodate patient age for each row
         df['patient_age'] = (df.date-df['birth_date']).astype(
                                                     'timedelta64[Y]').fillna(-1).astype('int')
@@ -99,7 +93,6 @@ def main(directory,origin_directory,prop=1):
         #Generate train-validation-test split set 
         generate_train_val_test_sets(df, directory)
     
-
 if __name__ == '__main__':
     
     destination_directory = sys.argv[1]
