@@ -33,7 +33,8 @@ def plot_top_categories(df,categorical,n,figsize=(20,10),title=None):
        ].groupby(categorical).agg(
                                 {'admission_id': 'count',
                                  'length': 'mean'}
-                                ).plot.bar(figsize=figsize,
+                                ).sort_values(by='admission_id',
+                                             ascending=False).plot.bar(figsize=figsize,
                                            title=['# of admissions by '+categorical,
                                                   'Avg. hospitalization length (hours) by '+categorical],
                                            subplots=True,
