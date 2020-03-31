@@ -4,6 +4,7 @@ import shutil
 import sys 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath('thesis_lib'))))
 from etl_helpers.data_processing import *
+from etl_helpers.dataset_helpers import *
 from thesis_lib.visual import *
 import warnings
 warnings.filterwarnings('ignore')

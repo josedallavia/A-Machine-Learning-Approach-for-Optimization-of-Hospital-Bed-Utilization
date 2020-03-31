@@ -7,7 +7,7 @@ from random import random
 import numpy as np 
 import etl_helpers 
 from etl_helpers.data_processing import *
-from etl_helpers.db_utils import * 
+from etl_helpers.database_utils import * 
 from datetime import timedelta
 from datetime import datetime
 from collections import namedtuple
