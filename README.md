@@ -30,7 +30,7 @@ This library contains classes that were exclusively created to work with this pr
 
   * [Exploration](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/Exploratory.ipynb): In this notebook the different datasets provided by the medical institution are explored with the intention of getting a general understanding of the information we have at our disposal.
   
-  * [MVP](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/MVP.ipynb)
+  * [MVP](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/MVP.ipynb): In this notebook, a first end-to-end machine learning model is built, trained and its performance is reported. 
 
 
 
