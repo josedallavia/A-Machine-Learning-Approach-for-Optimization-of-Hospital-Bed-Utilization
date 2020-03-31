@@ -12,9 +12,9 @@ PSA: Data will not be published as it was provided by a health center under a No
 * [ETL](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL)
 This folder contains different jobs that take part into the Extract, Transform and Load process of this project. 
 
-  * [preprocess_db.py](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/ETL/preprocess_db.py)
-  * [clinic_histories.py](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/ETL/clinic_histories.py)
-  * [dataset.py](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/ETL/dataset.py)
+  * [preprocess_db](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/ETL/preprocess_db.py)
+  * [clinic_histories](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/ETL/clinic_histories.py)
+  * [dataset](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/ETL/dataset.py)
   
   The functions used in each of the jobs above described are organized into the [etl_helpers](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL/etl_helpers) folder.
 
