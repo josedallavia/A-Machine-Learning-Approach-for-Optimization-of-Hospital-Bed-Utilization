@@ -23,13 +23,13 @@ Contains the code used for some preprocessing we perfomed on the raw data as wel
 * [thesis_lib](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/thesis_lib)
 
 This library contains classes that were exclusively created to work with this project. So far it consists of two modules: 
- * [visual](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/visual.py)
- * [hospital_classes](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/hospital_classes.py)
+  * [visual](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/visual.py)
+  * [hospital_classes](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/hospital_classes.py)
 
 * [model](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/model)
 
- * [Exploration](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/Exploratory.ipynb)
- * [MVP](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/MVP.ipynb)
+  * [Exploration](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/Exploratory.ipynb)
+  * [MVP](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/MVP.ipynb)
 
 
 In this notebook the different datasets provided by the medical institution are explored with the intention of getting a general understanding of the information we have at our disposal.
