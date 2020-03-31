@@ -18,19 +18,19 @@ This folder contains different jobs that take part into the Extract, Transform a
   
   The functions used in each of the jobs above described are organized into the [etl_helpers](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL/etl_helpers) folder.
 
-Contains the code used for some preprocessing we perfomed on the raw data as well as a the program that allows to generate all  patient historics records. All patients historic records consists of a dataset contanining one row per day a patient was hospitalized with all the available data for that patient upto that very same date (images, surgeries, laboratory analysis and hospital sectors). 
+
 
 * [thesis_lib](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/thesis_lib): 
 This library contains classes that were exclusively created to work with this project. So far it consists of two modules: 
 
-   * [visual](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/visual.py)
+   * [visual](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/visual.py) 
    * [hospital_classes](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/hospital_classes.py)
 
 * [model](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/model)
 
   * [Exploration](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/Exploratory.ipynb): In this notebook the different datasets provided by the medical institution are explored with the intention of getting a general understanding of the information we have at our disposal.
   
-  * [MVP](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/MVP.ipynb): In this notebook, a first end-to-end machine learning model is built, trained and its performance is reported. 
+  * [MVP](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/MVP.ipynb): In this notebook, a first end-to-end machine learning model is built and trained, and its performance is reported. 
 
 
 
