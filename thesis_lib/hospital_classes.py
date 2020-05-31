@@ -15,7 +15,7 @@ class Patient:
     def __init__(self, patient_id):
         self.patient_id = patient_id
 
-    def load_patient_data(self,db):
+    def load_patient_data(self, db):
         
         hosp = db['hospitalizations']
         labo = db['laboratory']
@@ -24,25 +24,21 @@ class Patient:
         sect = db['sectors_admissions']
         
         
-        self.hospitalizations_data = hosp[hosp['patient_id'] == self.patient_id].sort_values(
-                                                                                by='admission_date')
-        self.laboratory_data = labo[labo['patient_id'] == self.patient_id].sort_values(
-                                                                                by=['admission_date',
-                                                                                'labo_date'])
-        self.images_data = imag[imag['patient_id'] == self.patient_id].sort_values(
-                                                                                by=['admission_date',
-                                                                                'image_date'])
-        self.surgeries_data = surg[surg['patient_id'] == self.patient_id].sort_values(
-                                                                                by=['admission_date',
-                                                                                'surgery_date'])
-        self.sectors_data = sect[sect['patient_id'] == self.patient_id].sort_values(
-                                                                                by=['admission_id',
-                                                                                'sector_admission_date'])
+        self.hospitalizations_data = (
+            hosp[hosp['patient_id'] == self.patient_id].sort_values(by='admission_date'))
+        self.laboratory_data = (
+            labo[labo['patient_id'] == self.patient_id].sort_values(by=['admission_date', 'labo_date']))
+        self.images_data = (
+            imag[imag['patient_id'] == self.patient_id].sort_values(by=['admission_date', 'image_date'])
+        self.surgeries_data = (
+            surg[surg['patient_id'] == self.patient_id].sort_values(by=['admission_date', 'surgery_date'])
+        self.sectors_data = (
+            sect[sect['patient_id'] == self.patient_id].sort_values(by=['admission_id', 'sector_admission_date'])
     
     @property
     def admission_history(self): 
         
-        admission_key = namedtuple('admission_key', ['admission_number','admission_id'])
+        admission_key = namedtuple('admission_key', ['admission_number', 'admission_id'])
         
         if hasattr(self, 'hospitalizations_data'):
             return {admission_key(admission_number,admission_id) : Admission(admission_id, self) 
@@ -58,77 +54,67 @@ class Patient:
         
         for admission in self.admission_history.keys():
             patient_records['admission_id'] = admission.admission_id
-            patient_records['no._of_admission']: admission.admission_number
+            patient_records['no._of_admission'] = admission.admission_number
             
             admission_records = self.admission_history[admission].get_admission_records(patient_records)
             
             if records_history.empty:
                 records_history = admission_records
             else:
-                records_history  = records_history.append(admission_records, ignore_index=True)
+                records_history = records_history.append(admission_records, ignore_index=True)
         
         return records_history
             
 class Admission():
     def __init__(self, admission_id, patient):
-        self.admission_id = admission_id
-        
+        self.admission_id = admission_id 
         self.load_admission_data(patient)
 
     def load_admission_data(self,patient): 
         
         self.admission_data = self.process_hospitalization_data(patient)
-        self.discharge_datetime = datetime.strptime(str(self.admission_data['discharge_datetime']), 
-                                                    '%Y-%m-%d %H:%M:%S')
-        self.admission_datetime = datetime.strptime(str(self.admission_data['admission_datetime']),
-                                                   '%Y-%m-%d %H:%M:%S')
+        self.discharge_datetime = datetime.strptime(
+            str(self.admission_data['discharge_datetime']), '%Y-%m-%d %H:%M:%S')
+        self.admission_datetime = datetime.strptime(
+            str(self.admission_data['admission_datetime']), '%Y-%m-%d %H:%M:%S')
         self.laboratory_data = self.process_laboratory_data(patient)                                         
         self.images_data = self.process_images_data(patient)
         self.surgeries_data = self.process_surgeries_data(patient)
         self.sectors_data = self.process_sectors_data(patient)
 
     def process_hospitalization_data(self, patient):
-        
         return patient.hospitalizations_data[
-                                            (patient.hospitalizations_data.admission_id == self.admission_id)
-                                            ].to_dict(orient='records')[0]
+            (patient.hospitalizations_data.admission_id == self.admission_id)].to_dict(orient='records')[0]
         
     def process_laboratory_data(self, patient):
-    
         return patient.laboratory_data[patient.laboratory_data.admission_id == self.admission_id]
 
     def process_images_data(self, patient):
-        
         return patient.images_data[patient.images_data.admission_id == self.admission_id]
     
     def process_surgeries_data(self, patient):
-        
         return patient.surgeries_data[patient.surgeries_data.admission_id == self.admission_id] 
     
     def process_sectors_data(self, patient):
-        
         adm_sectors_data = patient.sectors_data[patient.sectors_data.admission_id == self.admission_id]
         
         if len(adm_sectors_data) == 0:
-            adm_sectors_data = pd.DataFrame([{'admission_id': self.admission_id, 
-                                'patient_id': patient.patient_id, 
-                                'sector_admission_date': self.admission_data['admission_date'],
-                                'sector_admission_time': self.admission_data['admission_time'],
-                                'sector_code': None, 
-                                'category': None,
-                                'sector_admission_datetime': pd.to_datetime(self.admission_data['admission_datetime'],
-                                                                            errors='ignore')}])
+            adm_sectors_data = pd.DataFrame([{
+                'admission_id': self.admission_id, 
+                'patient_id': patient.patient_id, 
+                'sector_admission_date': self.admission_data['admission_date'],
+                'sector_admission_time': self.admission_data['admission_time'],
+                'sector_code': None, 
+                'category': None,
+                'sector_admission_datetime': pd.to_datetime(
+                    self.admission_data['admission_datetime'], errors='ignore')
+            }])
                                 
-        adm_sectors_data['sector_stay'] = adm_sectors_data['sector_admission_datetime'
-                                                          ].diff(periods=1).astype(
-                                                                        'timedelta64[m]'
-                                                                        ).shift(-1)  
-        last_sector_stay = (self.discharge_datetime - 
-                            adm_sectors_data.iloc[-1].sector_admission_datetime)
+        adm_sectors_data['sector_stay'] = (
+            adm_sectors_data['sector_admission_datetime'].diff(periods=1).astype('timedelta64[m]').shift(-1))
+        last_sector_stay = (self.discharge_datetime - adm_sectors_data.iloc[-1].sector_admission_datetime)
         
-        
-        adm_sectors_data.loc[adm_sectors_data.index[-1],
-                                   'sector_stay'] = int(last_sector_stay.seconds/3600)
+        adm_sectors_data.loc[adm_sectors_data.index[-1], 'sector_stay'] = int(last_sector_stay.seconds/3600)
         
         return adm_sectors_data
     
@@ -235,8 +221,8 @@ class Admission():
         
     def get_admission_records(self, row):
         
-        length_of_stay = (self.admission_data['discharge_date']-
-                          self.admission_data['admission_date']).days
+        length_of_stay = (
+            self.admission_data['discharge_date'] - self.admission_data['admission_date']).days
         df = pd.DataFrame()
         
         row['labos_cumulative'] =  0
