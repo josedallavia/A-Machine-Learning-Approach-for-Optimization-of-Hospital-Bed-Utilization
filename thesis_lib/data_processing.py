@@ -147,7 +147,7 @@ def load_parquet(parquets_folder,file=None):
                     print('\t',len(db[df_name]))
                         
                 else:
-                    if file in filename:
+                    if file == filename[:-8]:
                         df_name = file
                         print('Loading dataset: ',df_name)
                         db[df_name] = pd.read_parquet(path+filename)
