@@ -8,7 +8,7 @@ from datetime import datetime
 
 def load_columns_dict(dataset):
     
-    if dataset == 'hospitalizations':
+    if dataset == 'admissions':
         series_names = {
             'Nro Adm': 'admission_id', 
             'Nro H.C.': 'patient_id', 
@@ -219,7 +219,7 @@ def load_columns_dict(dataset):
     return series_names
         
 def load_boolean_cols(dataset):
-    if dataset == 'hospitalizations':
+    if dataset == 'admissions':
         boolean_cols = ['discharge_summary',
                         'surgery',
                         'express_hip_surgery',
@@ -245,7 +245,7 @@ def load_boolean_cols(dataset):
 
 def load_cols_to_drop(dataset):
     
-    if dataset == 'hospitalizations':
+    if dataset == 'admissions':
         columns_to_drop = ['Prestac.Guardia']
     elif dataset == 'laboratory':
         columns_to_drop = ['Nombre Paciente',
@@ -301,7 +301,7 @@ def drop_cols(df, dataset_name):
 
 def generate_new_cols(df,dataset_name):
     
-    if dataset_name == 'hospitalizations':
+    if dataset_name == 'admissions':
         
         df['admission_datetime'] = pd.to_datetime(df['admission_date'].map(str)+" "+
                                                   df['admission_time'].map(str)
@@ -349,7 +349,7 @@ def process_df(df,dataset_name):
     print('\t Generating some new cols')
     df = generate_new_cols(df,dataset_name)
     
-    if dataset_name == 'hospitalizations':
+    if dataset_name == 'admissions':
         df = df.loc[~df['discharge_date'].isna()]
     
     return df
