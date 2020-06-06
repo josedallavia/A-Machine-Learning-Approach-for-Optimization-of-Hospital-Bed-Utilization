@@ -84,19 +84,21 @@ class FeatureProcessor(Pipeline):
         
     def get_feature_names(self):
         return self.transformer.get_feature_names()
-    
-    
-def build_pipeline(categorical_features,
-                   numerical_features,
-                  accepts_sparse=True):
+
+class CustomPipeline():
+    def __init__(self, categorical_features,
+                 numerical_features,
+                 accepts_sparse=True):
         
-        features_union = make_union(FeatureProcessor(numerical_features ,'numerical'),
-                                    FeatureProcessor(categorical_features,'categorical',accepts_sparse))
-        
-        pipeline = Pipeline(steps=[('preprocessing', FeaturePreProcessor() ),
-                                   ('feature_engineering', features_union)
-                                  
-                                  ])
-        print(pipeline)
-        
-        return pipeline
+        self.preprocessing = ('preprocessing', FeaturePreProcessor())
+        self.features_union = ('feature_engineering' , make_union(
+                                            FeatureProcessor(numerical_features ,'numerical'),
+                                            FeatureProcessor(categorical_features,'categorical',accepts_sparse))
+                              )
+    def build_pipeline(self):
+        return Pipeline([self.preprocessing,self.features_union]) 
+
+
+
+
+

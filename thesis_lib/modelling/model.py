@@ -24,9 +24,9 @@ class Model():
         self.model_params = model_params
        
         
-        self.pipeline = build_pipeline(self.model_params['categorical_features'],
+        self.pipeline = CustomPipeline(self.model_params['categorical_features'],
                                        self.model_params['numerical_features'],
-                                       self.model_params['accepts_sparse'])
+                                       self.model_params['accepts_sparse']).build_pipeline()
         
     
     @property
