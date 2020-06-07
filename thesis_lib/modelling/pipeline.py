@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import roc_auc_score
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.impute import SimpleImputer
 
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import make_union
@@ -31,14 +32,14 @@ class FeaturePreProcessor():
 class ItemSelector(BaseEstimator, TransformerMixin):
     
     def __init__(self, keys,is_categorical=False):
-        self.key = keys
+        self.keys = keys
         self.is_categorical = is_categorical
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X):     
-        return X[self.key].astype(str) if self.is_categorical else X[self.key]
+        return X[self.keys].astype(str) if self.is_categorical else X[self.keys]
     
 class CustomScaler(StandardScaler):
     
@@ -59,6 +60,7 @@ class CustomScaler(StandardScaler):
 class CustomEncoder(OneHotEncoder):
     
     def __init__(self,accepts_sparse=True):
+        self.accepts_sparse= accepts_sparse
         super().__init__(handle_unknown='ignore',sparse=accepts_sparse)
         
     def fit(self,X,y=None):
@@ -71,16 +73,20 @@ class CustomEncoder(OneHotEncoder):
 class FeatureProcessor(Pipeline):
     def __init__(self, features_list, transformer_type,accepts_sparse=True):
         self.features_list = features_list
-        self.transformer_dict = {'categorical': CustomEncoder(accepts_sparse),
+        self.transformer_type = transformer_type
+        self.accepts_sparse = accepts_sparse
+
+        self.transformer_dict = {'categorical': CustomEncoder(self.accepts_sparse),
                                  'numerical': CustomScaler()}
+
+
+        self.selector = ItemSelector(keys= self.features_list,
+                                     is_categorical= (self.transformer_type == 'categorical'))
         
-        self.selector  = ItemSelector(
-            keys=features_list,is_categorical= (transformer_type == 'categorical'))
-        
-        self.transformer = self.transformer_dict[transformer_type]
+        self.transformer = self.transformer_dict[self.transformer_type]
         
         super().__init__([('selector',self.selector),
-                          (transformer_type, self.transformer)])
+                          (self.transformer_type, self.transformer)])
         
     def get_feature_names(self):
         return self.transformer.get_feature_names()
@@ -89,14 +95,30 @@ class CustomPipeline():
     def __init__(self, categorical_features,
                  numerical_features,
                  accepts_sparse=True):
-        
-        self.preprocessing = ('preprocessing', FeaturePreProcessor())
-        self.features_union = ('feature_engineering' , make_union(
-                                            FeatureProcessor(numerical_features ,'numerical'),
-                                            FeatureProcessor(categorical_features,'categorical',accepts_sparse))
-                              )
+
+        self.categorical_features = categorical_features
+        self.numerical_features = numerical_features
+        self.accepts_sparse= accepts_sparse
+
     def build_pipeline(self):
-        return Pipeline([self.preprocessing,self.features_union]) 
+        #First step of pipeline: preprocesing
+        self.preprocessing = ('preprocessing', FeaturePreProcessor())
+
+        #Second step: feature engineering
+        numerical_processor = FeatureProcessor(features_list=self.numerical_features,
+                                               transformer_type='numerical',
+                                               accepts_sparse=self.accepts_sparse)
+
+        categorical_processor = FeatureProcessor(features_list=self.categorical_features,
+                                                 transformer_type='categorical',
+                                                 accepts_sparse=self.accepts_sparse)
+
+        self.features_union = ('feature_engineering', make_union(numerical_processor,
+                                                                 categorical_processor))
+        #Third step: missing imputtation
+        self.missings_processor =('missings_imputation',SimpleImputer(strategy='constant',fill_value=0))
+
+        return Pipeline([self.preprocessing,self.features_union, self.missings_processor])
 
 
 
