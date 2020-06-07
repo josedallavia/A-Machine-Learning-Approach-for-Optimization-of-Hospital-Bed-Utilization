@@ -7,7 +7,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import roc_auc_score
-
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import make_union
 import lightgbm as lgb
@@ -62,19 +63,25 @@ class Model():
 
 
     def fit_classifier(self, params={}):
-
-
         if self.model_params['classifier'] == 'lgbm':
-            self.classifier =  LGBM_classifier(**params)
+            self.classifier = LGBM_classifier()
+            self.classifier.set_params(**params)
         elif self.model_params['classifier'] == 'random_forest':
-            self.classifier = RFClassifier(**params)
+            self.classifier = RFClassifier()
+            self.classifier.set_params(**params)
 
         print('Training classifier')
         self.classifier.fit(self.X_train, self.y_train)
 
+    def fit_best_classifier(self):
+        best_params = self.model_selection.best_params_
+        self.fit_classifier(params=best_params)
 
     def predict(self,X_transf):
-        return  self.classifier.predict(X_transf)
+        return self.classifier.predict(X_transf)
+
+    def score(self,X_transf, y):
+        return self.classifier.score(X_transf, y)
 
     @property
     def get_feature_importance(self):
@@ -91,13 +98,47 @@ class Model():
         importance_df.sort_values(by='feature_importance',ascending=True, inplace=True)
         importance_df[:n_features].plot.barh(x=1,y=0, title='Feature Importance',legend=False)
 
+
     def get_performance_metrics(self):
 
-        auc_train = roc_auc_score(self.y_train, self.predict(self.X_train))
-        auc_val = roc_auc_score(self.y_val, self.predict(self.X_val))
+        auc_train = self.score(self.X_train, self.y_train)
+        auc_val = self.score(self.X_val, self.y_val)
 
         print('training AUC ROC score: ', auc_train)
 
         print('validation AUC ROC score: ', auc_val)
 
         print('relative overfitting: ', abs(auc_train-auc_val)/auc_train)
+
+    def optimize_hyperparams(self, params_dict, n_iter=10, n_folds=5, search_type='random'):
+
+        if self.model_params['classifier'] == 'lgbm':
+            tmp_classifier =  LGBM_classifier()
+        elif self.model_params['classifier'] == 'random_forest':
+            tmp_classifier = RFClassifier()
+
+        if search_type == 'random':
+            self.model_selection = RandomizedSearchCV(estimator=tmp_classifier,
+                                        param_distributions=params_dict,refit=False,
+                                        random_state=2020,n_iter=n_iter,cv=n_folds,
+                                        verbose=15)
+        elif search_type == 'grid':
+            self.model_selection = GridSearchCV(estimator=tmp_classifier,
+                                                param_grid=params_dict, refit=False,
+                                                cv=n_folds,verbose=15)
+
+        self.model_selection.fit(self.X_train,self.y_train)
+
+        return self.model_selection.cv_results_
+
+    def get_model_selection_results(self):
+        results = self.model_selection.cv_results_
+        results_df = pd.DataFrame({key: results[key] for key in results
+                                if key != 'params'})
+
+        return results_df
+
+
+
+
+
