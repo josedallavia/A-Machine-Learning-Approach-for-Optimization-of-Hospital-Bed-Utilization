@@ -23,11 +23,10 @@ class Model():
     def __init__(self, model_params):
 
         self.model_params = model_params
-
-
-        self.pipeline = CustomPipeline(self.model_params['categorical_features'],
-                                       self.model_params['numerical_features'],
-                                       self.model_params['accepts_sparse']).build_pipeline()
+        self.pipeline = CustomPipeline(categorical_features= self.model_params['categorical_features'],
+                                       numerical_features= self.model_params['numerical_features'],
+                                       accepts_sparse=self.model_params['accepts_sparse']
+                                       ).build_pipeline()
 
 
     @property
@@ -62,20 +61,20 @@ class Model():
         #self.y_test = data.test.y
 
 
-    def fit_classifier(self, params={}):
+    def fit_classifier(self, **kwargs):
         if self.model_params['classifier'] == 'lgbm':
             self.classifier = LGBM_classifier()
-            self.classifier.set_params(**params)
+            self.classifier.set_params(**kwargs)
         elif self.model_params['classifier'] == 'random_forest':
             self.classifier = RFClassifier()
-            self.classifier.set_params(**params)
+            self.classifier.set_params(**kwargs)
 
         print('Training classifier')
         self.classifier.fit(self.X_train, self.y_train)
 
     def fit_best_classifier(self):
         best_params = self.model_selection.best_params_
-        self.fit_classifier(params=best_params)
+        self.fit_classifier(**best_params)
 
     def predict(self,X_transf):
         return self.classifier.predict(X_transf)
