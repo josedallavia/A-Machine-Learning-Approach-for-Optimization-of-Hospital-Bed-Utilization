@@ -22,7 +22,9 @@ class FeaturePreProcessor():
 
     def transform(self,X):
         X['admission_weekday'] = pd.to_datetime(X['admission_date']).dt.weekday.astype('str')
+        X['admission_month'] = pd.to_datetime(X['admission_date']).dt.month.astype('str')
         X['date_weekday'] = pd.to_datetime(X['date']).dt.weekday.astype('str')
+        X['date_month'] = pd.to_datetime(X['date']).dt.weekday.astype('str')
         return X
 
 class ItemSelector(BaseEstimator, TransformerMixin):
@@ -109,10 +111,11 @@ class CustomImputer(SimpleImputer):
         return np.array([str(doc) for doc in docs])
 
 class CustomTfidfVectorizer(TfidfVectorizer):
-    def __init__(self,lowercase=True, ngram_range=(1, 4),token_pattern='[^,]+', min_df=10, max_df=0.9):
+    def __init__(self,lowercase=True, ngram_range=(1, 4),token_pattern='(?u)\\b\\w\\w+\\b',
+                 min_df=10, max_df=0.9):
         self.lowercase=lowercase
         self.ngram_range= ngram_range
-        self.token_pattern=token_pattern,
+        self.token_pattern=token_pattern
         self.min_df = min_df
         self.max_df = max_df
 
@@ -136,9 +139,11 @@ class FeatureProcessor(Pipeline):
         self.scale_numerical = scale_numerical
 
         self.processor_steps = []
+        #First step is always selector
         self.processor_steps.append(('selector',
                                      ItemSelector(keys=self.features_list,feature_type=self.feature_type)))
 
+        #next steps depende on the feature type
         if self.feature_type == 'categorical':
             self.transformer = CustomEncoder(self.accepts_sparse)
             self.processor_steps.append((self.feature_type,self.transformer))
@@ -151,8 +156,18 @@ class FeatureProcessor(Pipeline):
             self.processor_steps.append(('missings_imputation',
                                          CustomImputer(strategy='constant', fill_value='')))
             self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1,4),
-                                            token_pattern='[^,]+',min_df=10,max_df=0.9)
-            self.processor_steps.append(('tfidf_transformer',self.transformer))
+                                                     token_pattern='(?u)\\b\\w\\w+\\b',
+                                                     min_df=10,max_df=0.9)
+            self.processor_steps.append(('tfidf_text_transformer',self.transformer))
+
+        elif self.feature_type == 'sequence':
+            self.processor_steps.append(('missings_imputation',
+                                         CustomImputer(strategy='constant', fill_value='')))
+            self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1, 4),
+                                                     token_pattern='[^,]+',
+                                                     min_df=10, max_df=0.9)
+
+            self.processor_steps.append(('tfidf_sequence_transformer', self.transformer))
         
         super().__init__(self.processor_steps)
 
@@ -168,12 +183,13 @@ class FeatureProcessor(Pipeline):
         return self.transformer.get_feature_names()
 
 class CustomPipeline():
-    def __init__(self, categorical_features=[],numerical_features=[],text_features=[],
+    def __init__(self, categorical_features=[],numerical_features=[],text_features=[],sequence_features=[],
                  accepts_sparse=True, scale_numerical=False):
 
         self.categorical_features = categorical_features
         self.numerical_features = numerical_features
         self.text_features = text_features
+        self.sequence_features = sequence_features
         self.accepts_sparse= accepts_sparse
         self.scale_numerical = scale_numerical
 
@@ -204,7 +220,15 @@ class CustomPipeline():
                                                         feature_type='text',
                                                         accepts_sparse=self.accepts_sparse)
 
-                self.features_processors.append((text_feature,text_processor))
+                self.features_processors.append(('text_'+text_feature,text_processor))
+
+        if len(self.sequence_features) > 0:
+            for sequence_feature in self.sequence_features:
+                sequence_processor = FeatureProcessor(features_list=[sequence_feature],
+                                                        feature_type='sequence',
+                                                        accepts_sparse=self.accepts_sparse)
+
+                self.features_processors.append(('seq_'+sequence_feature,sequence_processor))
 
 
         self.features_union = ('feature_engineering', FeatureUnion(transformer_list=self.features_processors))

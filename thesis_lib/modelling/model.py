@@ -16,12 +16,14 @@ class Model():
         self.categorical_features = kwargs.get('categorical_features',[])
         self.numerical_features = kwargs.get('numerical_features',[])
         self.text_features = kwargs.get('text_features', [])
+        self.sequence_features = kwargs.get('sequence_features', [])
         self.scale_numerical = kwargs.get('scale_numerical', False)
         self.accepts_sparse = kwargs.get('accepts_sparse',True)
 
         self.pipeline = CustomPipeline(categorical_features= self.categorical_features,
                                        numerical_features= self.numerical_features,
                                        text_features=self.text_features,
+                                       sequence_features=self.sequence_features,
                                        accepts_sparse=self.accepts_sparse,
                                        scale_numerical=self.scale_numerical
                                        ).build_pipeline()
