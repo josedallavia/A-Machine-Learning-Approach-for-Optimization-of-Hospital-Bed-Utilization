@@ -155,7 +155,7 @@ class FeatureProcessor(Pipeline):
         elif self.feature_type == 'text':
             self.processor_steps.append(('missings_imputation',
                                          CustomImputer(strategy='constant', fill_value='')))
-            self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1,4),
+            self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1,2),
                                                      token_pattern='(?u)\\b\\w\\w+\\b',
                                                      min_df=10,max_df=0.9)
             self.processor_steps.append(('tfidf_text_transformer',self.transformer))
@@ -163,7 +163,7 @@ class FeatureProcessor(Pipeline):
         elif self.feature_type == 'sequence':
             self.processor_steps.append(('missings_imputation',
                                          CustomImputer(strategy='constant', fill_value='')))
-            self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1, 4),
+            self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(2, 4),
                                                      token_pattern='[^,]+',
                                                      min_df=10, max_df=0.9)
 
