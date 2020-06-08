@@ -43,6 +43,10 @@ class Model():
                          for x in feature_names]
 
         return feature_names
+    
+    @property
+    def n_features(self):
+        return(len(self.model_features))
 
     def transform(self,data,transform_test=False):
 
