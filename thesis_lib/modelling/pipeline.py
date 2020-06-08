@@ -11,7 +11,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 from thesis_lib.modelling.data import *
 
-
+hospital_stop_words = ['de','con','en','la','el','para','por','del','izquierda','las',
+ 'los','izq','izquierda','derecha','otro','otra','otros','otras','paciente','fase']
 
 class FeaturePreProcessor():
     def __init__(self):
@@ -112,15 +113,17 @@ class CustomImputer(SimpleImputer):
 
 class CustomTfidfVectorizer(TfidfVectorizer):
     def __init__(self,lowercase=True, ngram_range=(1, 4),token_pattern='(?u)\\b\\w\\w+\\b',
-                 min_df=10, max_df=0.9):
+                 min_df=10, max_df=0.9,stop_words=hospital_stop_words):
         self.lowercase=lowercase
         self.ngram_range= ngram_range
         self.token_pattern=token_pattern
         self.min_df = min_df
         self.max_df = max_df
+        self.stop_words=stop_words
 
         super().__init__(lowercase=self.lowercase, ngram_range=self.ngram_range,
-                         token_pattern=self.token_pattern, min_df=self.min_df, max_df=self.max_df)
+                         token_pattern=self.token_pattern, min_df=self.min_df, max_df=self.max_df,
+                         stop_words=self.stop_words)
 
     def fit(self,X,y=None):
         print('\t Fitting TD-IDF matrix')
