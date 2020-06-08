@@ -1,11 +1,12 @@
 
 import lightgbm as lgb
 from lightgbm import LGBMClassifier
+from lightgbm import *
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score
 
 
-class LGBM_classifier():
+class LGBM_classifier(LGBMClassifier):
     def __init__(self,objective='binary',metric='auc',is_unbalance=True,max_depth=7, learning_rate=0.1,
                  num_iterations=100):
         self.objective = objective
@@ -14,7 +15,6 @@ class LGBM_classifier():
         self.max_depth = max_depth
         self.learning_rate = learning_rate
         self.num_iterations = num_iterations
-
 
     def get_params(self,deep=True):
         return {'objective': self.objective,
@@ -28,7 +28,6 @@ class LGBM_classifier():
         for parameter, value in parameters.items():
             setattr(self, parameter, value)
         return self
-    
     def fit(self, X,y):
         
         lgb_train = lgb.Dataset(X,label=y)                    
@@ -47,22 +46,26 @@ class LGBM_classifier():
     
 class RFClassifier(RandomForestClassifier):
     
-    def __init__(self,n_estimators=50, random_state=2020,max_depth=10,max_features='sqrt',verbose=10):
+    def __init__(self,n_estimators=50, random_state=2020,max_depth=10,max_features='sqrt',verbose=10,
+                 n_jobs=-1):
         self.n_estimators=n_estimators
         self.random_state=random_state
         self.max_depth = max_depth
         self.max_features=max_features
         self.verbose=verbose
+        self.n_jobs=-1
 
         super().__init__(n_estimators = self.n_estimators, random_state=self.random_state,
-                         max_depth=self.max_depth, max_features=self.max_features, verbose=self.verbose)
+                         max_depth=self.max_depth, max_features=self.max_features, verbose=self.verbose,
+                         n_jobs=self.n_jobs)
 
     def get_params(self,deep=True):
         return {'n_estimators': self.n_estimators,
                 'random_state': self.random_state,
                 'max_depth': self.max_depth,
                 'max_features': self.max_features,
-                'verbose': self.verbose}
+                'verbose': self.verbose,
+                'n_jobs': self.n_jobs}
 
 
     def set_params(self, **parameters):
