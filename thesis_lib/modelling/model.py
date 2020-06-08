@@ -1,23 +1,9 @@
 import os
 import pandas as pd
-from matplotlib import pyplot as plt
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
-from sklearn.pipeline import FeatureUnion
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn.model_selection import GridSearchCV
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.pipeline import make_union
-import lightgbm as lgb
-from tqdm import tqdm
+#from sklearn.model_selection import GridSearchCV
 from pactools.grid_search import GridSearchCVProgressBar
-from dask.diagnostics import ProgressBar
-
-from lightgbm import LGBMClassifier
-
 from thesis_lib.modelling.data import *
 from thesis_lib.modelling.pipeline import *
 from thesis_lib.modelling.classifiers import *
