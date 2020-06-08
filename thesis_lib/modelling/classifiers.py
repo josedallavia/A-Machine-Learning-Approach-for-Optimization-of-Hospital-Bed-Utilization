@@ -65,14 +65,14 @@ class LGBM_classifier(LGBMClassifier):
     
 class RFClassifier(RandomForestClassifier):
     
-    def __init__(self,n_estimators=50, random_state=2020,max_depth=10,max_features='sqrt',verbose=10,
+    def __init__(self,n_estimators=100, random_state=2020,max_depth=10,max_features='sqrt',verbose=10,
                  n_jobs=-1):
         self.n_estimators=n_estimators
         self.random_state=random_state
         self.max_depth = max_depth
         self.max_features=max_features
         self.verbose=verbose
-        self.n_jobs=-1
+        self.n_jobs=2
 
         super().__init__(n_estimators = self.n_estimators, random_state=self.random_state,
                          max_depth=self.max_depth, max_features=self.max_features, verbose=self.verbose,

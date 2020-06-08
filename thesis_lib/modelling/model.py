@@ -138,11 +138,11 @@ class Model():
             self.model_selection = RandomizedSearchCV(estimator=tmp_classifier,
                                         param_distributions=params_dict,refit=False,
                                         random_state=2020,n_iter=n_iter,cv=n_folds,verbose=10,
-                                        n_jobs=-1)
+                                        n_jobs=2)
         elif search_type == 'grid':
             self.model_selection = GridSearchCVProgressBar(estimator=tmp_classifier,
                                                 param_grid=params_dict, refit=False,
-                                                cv=n_folds,verbose=10, n_jobs=-1)
+                                                cv=n_folds,verbose=10, n_jobs=2)
 
         self.model_selection.fit(self.X_train,self.y_train)
 
