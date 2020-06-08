@@ -9,11 +9,13 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import roc_auc_score
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.impute import SimpleImputer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.pipeline import make_union
 import lightgbm as lgb
-from thesis_lib.modelling.data import * 
+from thesis_lib.modelling.data import *
+
 
 
 class FeaturePreProcessor():
@@ -31,31 +33,49 @@ class FeaturePreProcessor():
 
 class ItemSelector(BaseEstimator, TransformerMixin):
     
-    def __init__(self, keys,is_categorical=False):
+    def __init__(self, keys,feature_type='numerical'):
         self.keys = keys
-        self.is_categorical = is_categorical
+        self.feature_type = feature_type
 
     def fit(self, X, y=None):
         return self
 
-    def transform(self, X):     
-        return X[self.keys].astype(str) if self.is_categorical else X[self.keys]
-    
+    def transform(self, X):
+        if self.feature_type == 'categorical':
+            return X[self.keys].astype(str)
+        elif self.feature_type == 'text':
+            if len(self.keys) > 1:
+                raise Exception('More than one feature was passed to text processor!')
+            return getattr(X, self.keys[0])
+        else:
+            return X[self.keys]
+
 class CustomScaler(StandardScaler):
     
-    def __init__ (self, with_mean=True,with_std=True):
-        super().__init__(with_mean=with_mean, 
+    def __init__ (self,scale=False, with_mean=True,with_std=True):
+        self.scale= scale
+        self.with_mean=with_mean
+        self.with_std = with_std
+
+        if self.scale:
+            super().__init__(with_mean=with_mean,
                          with_std=with_std)
     
     def fit(self,X,y=None):
         self.feature_names = list(X.columns)
-        return super().fit(X)
+        if self.scale:
+            return super().fit(X)
+        return self
+
     
     def transform(self,X):
-        return super().transform(X)
+        if self.scale:
+            return super().transform(X)
+        return X
         
     def get_feature_names(self):
         return self.feature_names
+
 
 class CustomEncoder(OneHotEncoder):
     
@@ -71,50 +91,71 @@ class CustomEncoder(OneHotEncoder):
         return super().get_feature_names(self.features_headers)
     
 class FeatureProcessor(Pipeline):
-    def __init__(self, features_list, transformer_type,accepts_sparse=True):
+    def __init__(self, features_list, feature_type,accepts_sparse=True,scale_numerical=False):
         self.features_list = features_list
-        self.transformer_type = transformer_type
+        self.feature_type = feature_type
         self.accepts_sparse = accepts_sparse
-
-        self.transformer_dict = {'categorical': CustomEncoder(self.accepts_sparse),
-                                 'numerical': CustomScaler()}
+        self.scale_numerical = scale_numerical
 
 
         self.selector = ItemSelector(keys= self.features_list,
-                                     is_categorical= (self.transformer_type == 'categorical'))
-        
-        self.transformer = self.transformer_dict[self.transformer_type]
+                                     feature_type = self.feature_type)
+
+        if self.feature_type == 'categorical':
+            self.transformer = CustomEncoder(self.accepts_sparse)
+        elif self.feature_type == 'numerical':
+            self.transformer = CustomScaler(scale=self.scale_numerical)
+        elif self.feature_type == 'text':
+            self.transformer = TfidfVectorizer(lowercase=True, ngram_range=(1,4), token_pattern='[^,]+',
+                                               min_df=10)
         
         super().__init__([('selector',self.selector),
-                          (self.transformer_type, self.transformer)])
+                          (self.feature_type, self.transformer)])
         
     def get_feature_names(self):
         return self.transformer.get_feature_names()
 
 class CustomPipeline():
-    def __init__(self, categorical_features,
-                 numerical_features,
-                 accepts_sparse=True):
+    def __init__(self, categorical_features=[],numerical_features=[],text_features=[],
+                 accepts_sparse=True, scale_numerical=False):
 
         self.categorical_features = categorical_features
         self.numerical_features = numerical_features
+        self.text_features = text_features
         self.accepts_sparse= accepts_sparse
+        self.scale_numerical = scale_numerical
 
     def build_pipeline(self):
         #First step of pipeline: preprocesing
         self.preprocessing = ('preprocessing', FeaturePreProcessor())
 
         #Second step: feature engineering
-        numerical_processor = FeatureProcessor(features_list=self.numerical_features,
-                                               transformer_type='numerical',
-                                               accepts_sparse=self.accepts_sparse)
+        self.features_processors = []
 
-        categorical_processor = FeatureProcessor(features_list=self.categorical_features,
-                                                 transformer_type='categorical',
+        if len(self.numerical_features) > 0:
+            numerical_processor = FeatureProcessor(features_list=self.numerical_features,
+                                                    feature_type='numerical',
+                                                    accepts_sparse=self.accepts_sparse,
+                                                    scale_numerical=self.scale_numerical)
+            self.features_processors.append(('numerical_processor',numerical_processor))
+
+        if len(self.categorical_features) > 0:
+
+            categorical_processor = FeatureProcessor(features_list=self.categorical_features,
+                                                 feature_type='categorical',
                                                  accepts_sparse=self.accepts_sparse)
+            self.features_processors.append(('categorical_processor' ,categorical_processor))
 
-        self.features_union = ('feature_engineering', make_union(numerical_processor,
-                                                                 categorical_processor))
+        if len(self.text_features) > 0:
+            for text_feature in self.text_features:
+                text_processor = FeatureProcessor(features_list=self.text_features,
+                                                        feature_type='text',
+                                                        accepts_sparse=self.accepts_sparse)
+
+            self.features_processors.append((text_feature,text_processor))
+
+
+        self.features_union = ('feature_engineering', FeatureUnion(transformer_list=self.features_processors))
         #Third step: missing imputtation
         self.missings_processor =('missings_imputation',SimpleImputer(strategy='constant',fill_value=0))
 
