@@ -1,19 +1,14 @@
 import os
 import pandas as pd
-from matplotlib import pyplot as plt   
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 from sklearn.pipeline import FeatureUnion
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import roc_auc_score
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.impute import SimpleImputer
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.pipeline import make_union
-import lightgbm as lgb
+import numpy as np
 from thesis_lib.modelling.data import *
 
 
@@ -24,8 +19,7 @@ class FeaturePreProcessor():
     
     def fit(self,X,y=None):
         return self
-        
-        
+
     def transform(self,X):
         X['admission_weekday'] = pd.to_datetime(X['admission_date']).dt.weekday.astype('str')
         X['date_weekday'] = pd.to_datetime(X['date']).dt.weekday.astype('str')
@@ -41,12 +35,13 @@ class ItemSelector(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
+        print('\t Preprocessing data')
         if self.feature_type == 'categorical':
             return X[self.keys].astype(str)
         elif self.feature_type == 'text':
             if len(self.keys) > 1:
                 raise Exception('More than one feature was passed to text processor!')
-            return getattr(X, self.keys[0])
+            return np.array(getattr(X, self.keys[0])).reshape(-1, 1)
         else:
             return X[self.keys]
 
@@ -64,18 +59,19 @@ class CustomScaler(StandardScaler):
     def fit(self,X,y=None):
         self.feature_names = list(X.columns)
         if self.scale:
+            print('\t Fitting StandardScaler for numerical features')
             return super().fit(X)
         return self
 
     
     def transform(self,X):
         if self.scale:
+            print('\t Scaling numerical features with StandardScaler')
             return super().transform(X)
         return X
         
     def get_feature_names(self):
         return self.feature_names
-
 
 class CustomEncoder(OneHotEncoder):
     
@@ -84,12 +80,54 @@ class CustomEncoder(OneHotEncoder):
         super().__init__(handle_unknown='ignore',sparse=accepts_sparse)
         
     def fit(self,X,y=None):
+        print('\t Encoding Categorical Features with OneHotEncoding')
         self.features_headers = list(X.columns)
         return super().fit(X)
         
     def get_feature_names(self):
         return super().get_feature_names(self.features_headers)
-    
+
+
+
+class CustomImputer(SimpleImputer):
+    def __init__(self, strategy='constant', fill_value=''):
+        self.strategy = strategy
+        self.fill_value = fill_value
+
+        super().__init__(strategy=self.strategy,fill_value=fill_value)
+
+    def fit(self,X,y=None):
+        return super().fit(X)
+
+    def fit_transform(self, X, y=None):
+        super().fit(X)
+        docs = self.transform(X)
+        return docs
+
+    def transform(self,X):
+        docs = super().transform(X)
+        return np.array([str(doc) for doc in docs])
+
+class CustomTfidfVectorizer(TfidfVectorizer):
+    def __init__(self,lowercase=True, ngram_range=(1, 4),token_pattern='[^,]+', min_df=10, max_df=0.9):
+        self.lowercase=lowercase
+        self.ngram_range= ngram_range
+        self.token_pattern=token_pattern,
+        self.min_df = min_df
+        self.max_df = max_df
+
+        super().__init__(lowercase=self.lowercase, ngram_range=self.ngram_range,
+                         token_pattern=self.token_pattern, min_df=self.min_df, max_df=self.max_df)
+
+    def fit(self,X,y=None):
+        print('\t Fitting TD-IDF matrix')
+        return super().fit(X)
+
+    def transform(self,X):
+        print('\t Transforming text features with TF-IDF embeddings')
+        return super().transform(X)
+
+
 class FeatureProcessor(Pipeline):
     def __init__(self, features_list, feature_type,accepts_sparse=True,scale_numerical=False):
         self.features_list = features_list
@@ -97,21 +135,35 @@ class FeatureProcessor(Pipeline):
         self.accepts_sparse = accepts_sparse
         self.scale_numerical = scale_numerical
 
-
-        self.selector = ItemSelector(keys= self.features_list,
-                                     feature_type = self.feature_type)
+        self.processor_steps = []
+        self.processor_steps.append(('selector',
+                                     ItemSelector(keys=self.features_list,feature_type=self.feature_type)))
 
         if self.feature_type == 'categorical':
             self.transformer = CustomEncoder(self.accepts_sparse)
+            self.processor_steps.append((self.feature_type,self.transformer))
+
         elif self.feature_type == 'numerical':
             self.transformer = CustomScaler(scale=self.scale_numerical)
+            self.processor_steps.append((self.feature_type,self.transformer))
+
         elif self.feature_type == 'text':
-            self.transformer = TfidfVectorizer(lowercase=True, ngram_range=(1,4), token_pattern='[^,]+',
-                                               min_df=10)
+            self.processor_steps.append(('missings_imputation',
+                                         CustomImputer(strategy='constant', fill_value='')))
+            self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1,4),
+                                            token_pattern='[^,]+',min_df=10,max_df=0.9)
+            self.processor_steps.append(('tfidf_transformer',self.transformer))
         
-        super().__init__([('selector',self.selector),
-                          (self.feature_type, self.transformer)])
-        
+        super().__init__(self.processor_steps)
+
+    def fit(self,X,y=None):
+        print('\t Fitting processor for {feature_type} features'.format(feature_type=self.feature_type))
+        return super().fit(X)
+
+    def transform(self, X):
+        print('\t Transforming {feature_type} features'.format(feature_type=self.feature_type))
+        return super().transform(X)
+
     def get_feature_names(self):
         return self.transformer.get_feature_names()
 
@@ -148,11 +200,11 @@ class CustomPipeline():
 
         if len(self.text_features) > 0:
             for text_feature in self.text_features:
-                text_processor = FeatureProcessor(features_list=self.text_features,
+                text_processor = FeatureProcessor(features_list=[text_feature],
                                                         feature_type='text',
                                                         accepts_sparse=self.accepts_sparse)
 
-            self.features_processors.append((text_feature,text_processor))
+                self.features_processors.append((text_feature,text_processor))
 
 
         self.features_union = ('feature_engineering', FeatureUnion(transformer_list=self.features_processors))
