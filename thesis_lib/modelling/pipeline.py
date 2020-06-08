@@ -12,7 +12,7 @@ import numpy as np
 from thesis_lib.modelling.data import *
 
 hospital_stop_words = ['de','con','en','la','el','para','por','del','izquierda','las',
- 'los','izq','izquierda','derecha','otro','otra','otros','otras','paciente','fase']
+ 'los','izq','izquierda','derecha','otro','otra','otros','otras','paciente','fase', '__']
 
 class FeaturePreProcessor():
     def __init__(self):
@@ -166,7 +166,7 @@ class FeatureProcessor(Pipeline):
         elif self.feature_type == 'sequence':
             self.processor_steps.append(('missings_imputation',
                                          CustomImputer(strategy='constant', fill_value='')))
-            self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(2, 4),
+            self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1, 2),
                                                      token_pattern='[^,]+',
                                                      min_df=10, max_df=0.9)
 
