@@ -1,16 +1,8 @@
+
+import sys
 import pandas as pd
 import os
-import shutil
-import matplotlib.pyplot as plt 
-from datetime import timedelta
-from random import random
-import numpy as np
-import os, sys
-import pandas as pd
-import os
-import shutil
-import matplotlib.pyplot as plt 
-from datetime import datetime
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath('thesis_lib'))))
 
 def process_raw_files(origin_folder, destination_folder):

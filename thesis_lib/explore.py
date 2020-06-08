@@ -1,34 +1,13 @@
-import pandas as pd
-import os
-import shutil
-import matplotlib.pyplot as plt 
-import thesis_lib
-from datetime import datetime, date 
 from thesis_lib.data_processing import *
 from thesis_lib.visual import *
-import warnings
-warnings.filterwarnings('ignore')
-import numpy as np
-from math import ceil
-from numpy import nan
 from thesis_lib.quality import *
-import pandas as pd
-import os
-import shutil
-import matplotlib.pyplot as plt 
-import thesis_lib
-from datetime import datetime, date 
+import matplotlib.pyplot as plt
 from thesis_lib.data_processing import *
 from thesis_lib.visual import *
-import warnings
-warnings.filterwarnings('ignore')
-import numpy as np
-from math import ceil
 from numpy import nan
 from IPython.display import display, HTML
 plt.rcParams.update({'font.size': 12})
-pd.set_option('max_colwidth', 2)
-pd.set_option('precision', 2)
+
 
 
 class Dataset:

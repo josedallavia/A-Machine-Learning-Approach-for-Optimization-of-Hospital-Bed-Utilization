@@ -1,11 +1,8 @@
 import pandas as pd
-import os
-import shutil
-pd.set_option('display.max_columns', None)  
+
 from thesis_lib.data_processing import *
 from thesis_lib.visual import *
-import warnings
-warnings.filterwarnings('ignore')
+
 from datetime import timedelta
 from datetime import datetime
 from collections import namedtuple
@@ -29,11 +26,11 @@ class Patient:
         self.laboratory_data = (
             labo[labo['patient_id'] == self.patient_id].sort_values(by=['admission_date', 'labo_date']))
         self.images_data = (
-            imag[imag['patient_id'] == self.patient_id].sort_values(by=['admission_date', 'image_date'])
+            imag[imag['patient_id'] == self.patient_id].sort_values(by=['admission_date', 'image_date']))
         self.surgeries_data = (
-            surg[surg['patient_id'] == self.patient_id].sort_values(by=['admission_date', 'surgery_date'])
+            surg[surg['patient_id'] == self.patient_id].sort_values(by=['admission_date', 'surgery_date']))
         self.sectors_data = (
-            sect[sect['patient_id'] == self.patient_id].sort_values(by=['admission_id', 'sector_admission_date'])
+            sect[sect['patient_id'] == self.patient_id].sort_values(by=['admission_id', 'sector_admission_date']))
     
     @property
     def admission_history(self): 
@@ -253,4 +250,4 @@ class Admission():
             
             df = df.append(row, ignore_index=True)
             
-        return df        
+        return df
