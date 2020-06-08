@@ -7,13 +7,14 @@ from sklearn.metrics import roc_auc_score
 
 class LGBM_classifier(LGBMClassifier):
     def __init__(self,objective='binary',metric='auc',is_unbalance=True,max_depth=7, learning_rate=0.1,
-                 num_iterations=100):
+                 num_iterations=100,feature_names='auto'):
         self.objective = objective
         self.metric = metric
         self.is_unbalance = is_unbalance
         self.max_depth = max_depth
         self.learning_rate = learning_rate
         self.num_iterations = num_iterations
+        self.feature_names= feature_names
 
     def get_params(self,deep=True):
         return {'objective': self.objective,
@@ -27,10 +28,20 @@ class LGBM_classifier(LGBMClassifier):
         for parameter, value in parameters.items():
             setattr(self, parameter, value)
         return self
-    def fit(self, X,y):
-        
-        lgb_train = lgb.Dataset(X,label=y)                    
-        self.lgbm_classifier = lgb.train(self.get_params(), lgb_train)
+    def fit(self, X_train,y_train,X_val,y_val):
+
+        # to record eval results for plotting
+        evals_result = {}
+
+        lgb_train = lgb.Dataset(X_train,label=y_train)
+        lgb_val = lgb.Dataset(X_val, label=y_val)
+        self.lgbm_classifier = lgb.train(self.get_params(),lgb_train,
+                                         feature_name=self.feature_names,
+                                         evals_result=evals_result,
+                                         valid_sets=[lgb_train,lgb_val],
+                                         valid_names=['training_set','validation_set'],
+                                         verbose_eval=10)
+        self.evals_result = evals_result
         
     def predict(self,X_transf):
         return  self.lgbm_classifier.predict(X_transf)
