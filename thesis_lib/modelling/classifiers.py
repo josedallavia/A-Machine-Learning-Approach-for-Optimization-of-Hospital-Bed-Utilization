@@ -22,24 +22,33 @@ class LGBM_classifier(LGBMClassifier):
                 'is_unbalance': self.is_unbalance,
                 'max_depth' : self.max_depth,
                 'learning_rate': self.learning_rate,
-                'num_iterations': self.num_iterations}
+                'num_iterations': self.num_iterations,
+                'feature_names': self.feature_names}
 
     def set_params(self, **parameters):
         for parameter, value in parameters.items():
             setattr(self, parameter, value)
         return self
-    def fit(self, X_train,y_train,X_val,y_val):
+    def fit(self, X_train,y_train,X_val=None,y_val=None):
 
         # to record eval results for plotting
         evals_result = {}
 
         lgb_train = lgb.Dataset(X_train,label=y_train)
-        lgb_val = lgb.Dataset(X_val, label=y_val)
+
+        if X_val != None:
+            lgb_val = lgb.Dataset(X_val, label=y_val)
+            valid_sets = [lgb_train,lgb_val]
+            valid_names = ['training_set','validation_set']
+        else:
+            valid_sets = [lgb_train]
+            valid_names = ['training_set']
+
         self.lgbm_classifier = lgb.train(self.get_params(),lgb_train,
                                          feature_name=self.feature_names,
                                          evals_result=evals_result,
-                                         valid_sets=[lgb_train,lgb_val],
-                                         valid_names=['training_set','validation_set'],
+                                         valid_sets=valid_sets,
+                                         valid_names=valid_names,
                                          verbose_eval=10)
         self.evals_result = evals_result
         
