@@ -63,14 +63,19 @@ class Model():
 
     def fit_classifier(self, **kwargs):
         if self.classifier_name == 'lgbm':
-            self.classifier = LGBM_classifier()
+            self.classifier = LGBM_classifier(feature_names=self.model_features)
             self.classifier.set_params(**kwargs)
         elif self.classifier_name  == 'random_forest':
             self.classifier = RFClassifier()
             self.classifier.set_params(**kwargs)
 
         print('Training classifier')
-        self.classifier.fit(self.X_train, self.y_train)
+        if self.classifier_name == 'lgbm':
+            self.classifier.fit(self.X_train,self.y_train,
+                                self.X_val,self.y_val)
+        else:
+            self.classifier.fit(self.X_train, self.y_train)
+
 
     def fit_best_classifier(self):
         assert hasattr(self, 'model_selection')
@@ -103,7 +108,7 @@ class Model():
 
         print('validation AUC ROC score: ',auc_val)
 
-        print('relative overfitting: ',abs(auc_train-auc_val)/auc_train)
+        print('relative over-fitting: ',abs(auc_train-auc_val)/auc_train)
 
     def optimize_hyperparams(self, params_dict, n_iter=10, n_folds=5, search_type='random'):
 
@@ -115,12 +120,12 @@ class Model():
         if search_type == 'random':
             self.model_selection = RandomizedSearchCV(estimator=tmp_classifier,
                                         param_distributions=params_dict,refit=False,
-                                        random_state=2020,n_iter=n_iter,cv=n_folds,verbose=1,
+                                        random_state=2020,n_iter=n_iter,cv=n_folds,verbose=10,
                                         n_jobs=-1)
         elif search_type == 'grid':
             self.model_selection = GridSearchCVProgressBar(estimator=tmp_classifier,
                                                 param_grid=params_dict, refit=False,
-                                                cv=n_folds,verbose=1, n_jobs=-1)
+                                                cv=n_folds,verbose=10, n_jobs=-1)
 
         self.model_selection.fit(self.X_train,self.y_train)
 
