@@ -28,6 +28,19 @@ class Model():
                                        scale_numerical=self.scale_numerical
                                        ).build_pipeline()
 
+    def get_model_params(self, deep=True):
+        return {'classifier': self.classifier_name,
+                'classifier_params': self.get_classifier_params(),
+                'categorical_features': self.categorical_features,
+                'numerical_features': self.numerical_features,
+                'text_features': self.text_features,
+                'sequence_features': self.sequence_features,
+                'scale_numerical': self.scale_numerical,
+                'accepts_sparse': self.accepts_sparse}
+
+    def get_classifier_params(self):
+        return self.classifier.get_params()
+
 
     @property
     def model_features(self):
@@ -43,7 +56,7 @@ class Model():
                          for x in feature_names]
 
         return feature_names
-    
+
     @property
     def n_features(self):
         return(len(self.model_features))
