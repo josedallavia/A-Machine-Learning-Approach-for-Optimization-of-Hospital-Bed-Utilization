@@ -1,4 +1,4 @@
-# A-Machine-Learning-Approach-for-Optimization-of-Hospital-Bed-Availability
+# A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability
 
 ### Introduction
 
@@ -26,21 +26,11 @@ This folder contains the different jobs that take part into the Extract, Transfo
   The functions used in each of the jobs above described are organized into the [etl_helpers](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/ETL/etl_helpers) folder.
 
 
-
 * [thesis_lib](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/thesis_lib): 
-This library contains classes that were exclusively created to work with this project. So far it consists of two modules: 
-
-   * [visual](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/visual.py): This module contains plotting functions used primarily for exploration of the available datasets.
-   * [hospital_classes](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/thesis_lib/hospital_classes.py) This module contain two classes:
-     1. Patient class: This class is aimed to enclose attributes and methods related to a patient. The class is initialized by providing a valid patient_id. Each patient has the propery `admission history` which consists of a dictionary of his admissions accessed through their admission ids.
-     2. Admission class: This class is aimed to enclose attributes and methods related to an admission of a patient. The class is initialized by providing a valid admission id and its corresponding object of Patient class. Thus, both classes are related to each other in a complementary way. 
+This library contains modules that were exclusively created to work with different aspects of this project.
      
-     
-* [model](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/model) This folder contains the different notebooks used so far to approach the modeling problem. 
+* [Experiments](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/tree/master/experiments) This folder contains the different modeling approaches experimented in this project rendered in Jupyter Notebooks.
 
-  * [Exploration](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/Exploratory.ipynb): In this notebook the different datasets provided by the medical institution are explored with the intention of getting a general understanding of the information we have at our disposal.
-  
-  * [MVP](https://github.com/josedallavia/A-Machine-Learning-Approach-for-Prediction-of-Hospital-Bed-Availability/blob/master/model/MVP.ipynb): In this notebook, a first end-to-end machine learning model is built and trained, and its performance is reported. 
 
 
 
