@@ -3,3 +3,5 @@
 *.pkl
 *.DS_Store
 Sanatorio/
+data/
+p_data/
