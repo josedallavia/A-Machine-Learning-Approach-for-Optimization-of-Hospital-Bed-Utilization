@@ -12,7 +12,7 @@ import numpy as np
 from thesis_lib.modelling.data import *
 
 hospital_stop_words = ['de','con','en','la','el','para','por','del','izquierda','las',
- 'los','izq','izquierda','derecha','otro','otra','otros','otras','paciente','fase', '__']
+ 'los','izq','izquierda','derecha','otro','otra','otros','otras','paciente','fase', '__','_']
 
 class FeaturePreProcessor():
     def __init__(self):
@@ -91,7 +91,6 @@ class CustomEncoder(OneHotEncoder):
         return super().get_feature_names(self.features_headers)
 
 
-
 class CustomImputer(SimpleImputer):
     def __init__(self, strategy='constant', fill_value=''):
         self.strategy = strategy
@@ -113,13 +112,14 @@ class CustomImputer(SimpleImputer):
 
 class CustomTfidfVectorizer(TfidfVectorizer):
     def __init__(self,lowercase=True, ngram_range=(1, 4),token_pattern='(?u)\\b\\w\\w+\\b',
-                 min_df=10, max_df=0.9,stop_words=hospital_stop_words):
+                 min_df=10, max_df=0.9,stop_words=hospital_stop_words,prefix=''):
         self.lowercase=lowercase
         self.ngram_range= ngram_range
         self.token_pattern=token_pattern
         self.min_df = min_df
         self.max_df = max_df
         self.stop_words=stop_words
+        self.prefix = prefix
 
         super().__init__(lowercase=self.lowercase, ngram_range=self.ngram_range,
                          token_pattern=self.token_pattern, min_df=self.min_df, max_df=self.max_df,
@@ -132,6 +132,10 @@ class CustomTfidfVectorizer(TfidfVectorizer):
     def transform(self,X):
         print('\t Transforming text features with TF-IDF embeddings')
         return super().transform(X)
+
+    def get_feature_names(self):
+        tokens = super().get_feature_names()
+        return [self.prefix+'_'+token for token in tokens]
 
 
 class FeatureProcessor(Pipeline):
@@ -157,18 +161,18 @@ class FeatureProcessor(Pipeline):
 
         elif self.feature_type == 'text':
             self.processor_steps.append(('missings_imputation',
-                                         CustomImputer(strategy='constant', fill_value='')))
+                                         CustomImputer(strategy='constant', fill_value='null')))
             self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1,2),
                                                      token_pattern='(?u)\\b\\w\\w+\\b',
-                                                     min_df=10,max_df=0.9)
+                                                     min_df=10,max_df=0.9,prefix=self.features_list[0])
             self.processor_steps.append(('tfidf_text_transformer',self.transformer))
 
         elif self.feature_type == 'sequence':
-            self.processor_steps.append(('missings_imputation',
-                                         CustomImputer(strategy='constant', fill_value='')))
+            self.processor_steps.append(('missings_imputation',token
+                                         CustomImputer(strategy='constant', fill_value='null')))
             self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1, 2),
                                                      token_pattern='[^,]+',
-                                                     min_df=10, max_df=0.9)
+                                                     min_df=10, max_df=0.9,prefix=self.features_list[0])
 
             self.processor_steps.append(('tfidf_sequence_transformer', self.transformer))
         
