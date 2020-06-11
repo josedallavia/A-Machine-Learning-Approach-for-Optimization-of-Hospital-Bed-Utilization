@@ -1,7 +1,6 @@
 import lightgbm as lgb
 from lightgbm import LGBMClassifier
 from lightgbm import *
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score
 
 
@@ -69,48 +68,4 @@ class LGBM_classifier(LGBMClassifier):
     @property
     def feature_importance_(self):
         return self.lgbm_classifier.feature_importance()
-    
-class RFClassifier(RandomForestClassifier):
-    
-    def __init__(self,n_estimators=100, random_state=2020,max_depth=10,max_features='sqrt',verbose=10,
-                 n_jobs=-1,min_samples_leaf=1):
-        self.n_estimators=n_estimators
-        self.random_state=random_state
-        self.max_depth = max_depth
-        self.max_features=max_features
-        self.verbose=verbose
-        self.n_jobs=2
-        self.min_samples_leaf = min_samples_leaf
-
-        super().__init__(n_estimators = self.n_estimators, random_state=self.random_state,
-                         max_depth=self.max_depth, max_features=self.max_features, verbose=self.verbose,
-                         n_jobs=self.n_jobs, min_samples_leaf=self.min_samples_leaf)
-
-    def get_params(self,deep=True):
-        return {'n_estimators': self.n_estimators,
-                'random_state': self.random_state,
-                'max_depth': self.max_depth,
-                'max_features': self.max_features,
-                'verbose': self.verbose,
-                'n_jobs': self.n_jobs}
-
-
-    def set_params(self, **parameters):
-        for parameter, value in parameters.items():
-            setattr(self, parameter, value)
-        return self
-    
-    def fit(self,X,y):
-        super().fit(X,y)
-    
-    def predict(self,X_transf):
-        return self.predict_proba(X_transf)[:,1]
-
-    def score(self, X_transf, y_true):
-        y_pred = self.predict(X_transf)
-        return roc_auc_score(y_true, y_pred)
-
-    @property
-    def feature_importance_(self):
-        return super().feature_importances_
     
