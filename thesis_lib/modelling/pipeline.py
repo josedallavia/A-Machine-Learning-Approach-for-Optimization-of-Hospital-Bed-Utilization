@@ -164,7 +164,7 @@ class FeatureProcessor(Pipeline):
                                          CustomImputer(strategy='constant', fill_value='null')))
             self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1,2),
                                                      token_pattern='(?u)\\b\\w\\w+\\b',
-                                                     min_df=10,max_df=0.9,prefix=self.features_list[0])
+                                                     min_df=10,max_df=0.9,prefix='')
             self.processor_steps.append(('tfidf_text_transformer',self.transformer))
 
         elif self.feature_type == 'sequence':
@@ -172,7 +172,7 @@ class FeatureProcessor(Pipeline):
                                          CustomImputer(strategy='constant', fill_value='null')))
             self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1, 2),
                                                      token_pattern='[^,]+',
-                                                     min_df=10, max_df=0.9,prefix=self.features_list[0])
+                                                     min_df=10, max_df=0.9,prefix='')
 
             self.processor_steps.append(('tfidf_sequence_transformer', self.transformer))
         
