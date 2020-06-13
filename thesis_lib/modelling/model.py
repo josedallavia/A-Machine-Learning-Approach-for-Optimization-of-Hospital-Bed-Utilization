@@ -135,7 +135,10 @@ class Model():
 
         print('validation AUC ROC score: ',auc_val)
 
-        print('relative over-fitting: ',abs(auc_train-auc_val)/auc_train)
+        overfitting = abs(auc_train-auc_val)/auc_train
+        print('relative over-fitting: ',overfitting)
+
+        return {'auc_training': auc_train , 'auc_validation': auc_val, 'overfitting':overfitting}
 
     def optimize_hyperparams(self, params_dict, n_iter=10, n_folds=5, search_type='random'):
 
