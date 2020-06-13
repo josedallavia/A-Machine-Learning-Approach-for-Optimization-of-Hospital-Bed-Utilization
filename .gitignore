@@ -1,8 +1,9 @@
 *.pyc
-**/.ipynb_checkpoints
+**/.ipynb_checkpoints/
 *.pkl
 *.DS_Store
 Sanatorio/
 data/
 p_data/
 Thesis_Proposal_DallaVia.pdf
+**/__pycache__/
