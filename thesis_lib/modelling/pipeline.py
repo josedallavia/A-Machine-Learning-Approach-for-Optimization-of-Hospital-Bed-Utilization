@@ -38,7 +38,7 @@ class ItemSelector(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        print('\t Preprocessing data')
+
         if self.feature_type == 'categorical':
             return X[self.keys].astype(str)
         elif self.feature_type == 'text':
@@ -62,14 +62,14 @@ class CustomScaler(StandardScaler):
     def fit(self,X,y=None):
         self.feature_names = list(X.columns)
         if self.scale:
-            print('\t Fitting StandardScaler for numerical features')
+            #print('\t Fitting StandardScaler for numerical features')
             return super().fit(X)
         return self
 
     
     def transform(self,X):
         if self.scale:
-            print('\t Scaling numerical features with StandardScaler')
+            #print('\t Scaling numerical features with StandardScaler')
             return super().transform(X)
         return X
         
@@ -83,7 +83,7 @@ class CustomEncoder(OneHotEncoder):
         super().__init__(handle_unknown='ignore',sparse=accepts_sparse)
         
     def fit(self,X,y=None):
-        print('\t Encoding Categorical Features with OneHotEncoding')
+        #print('\t Encoding Categorical Features with OneHotEncoding')
         self.features_headers = list(X.columns)
         return super().fit(X)
         
@@ -126,11 +126,11 @@ class CustomTfidfVectorizer(TfidfVectorizer):
                          stop_words=self.stop_words)
 
     def fit(self,X,y=None):
-        print('\t Fitting TD-IDF matrix')
+        #print('\t Fitting TD-IDF matrix')
         return super().fit(X)
 
     def transform(self,X):
-        print('\t Transforming text features with TF-IDF embeddings')
+        #print('\t Transforming text features with TF-IDF embeddings')
         return super().transform(X)
 
     def get_feature_names(self):
@@ -164,26 +164,26 @@ class FeatureProcessor(Pipeline):
                                          CustomImputer(strategy='constant', fill_value='null')))
             self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1,2),
                                                      token_pattern='(?u)\\b\\w\\w+\\b',
-                                                     min_df=10,max_df=0.9,prefix=self.features_list[0])
+                                                     min_df=10,max_df=0.9,prefix='')
             self.processor_steps.append(('tfidf_text_transformer',self.transformer))
 
         elif self.feature_type == 'sequence':
-            self.processor_steps.append(('missings_imputation',token
+            self.processor_steps.append(('missings_imputation',
                                          CustomImputer(strategy='constant', fill_value='null')))
             self.transformer = CustomTfidfVectorizer(lowercase=True, ngram_range=(1, 2),
                                                      token_pattern='[^,]+',
-                                                     min_df=10, max_df=0.9,prefix=self.features_list[0])
+                                                     min_df=10, max_df=0.9,prefix='')
 
             self.processor_steps.append(('tfidf_sequence_transformer', self.transformer))
         
         super().__init__(self.processor_steps)
 
     def fit(self,X,y=None):
-        print('\t Fitting processor for {feature_type} features'.format(feature_type=self.feature_type))
+        #print('\t Fitting processor for {feature_type} features'.format(feature_type=self.feature_type))
         return super().fit(X)
 
     def transform(self, X):
-        print('\t Transforming {feature_type} features'.format(feature_type=self.feature_type))
+        #print('\t Transforming {feature_type} features'.format(feature_type=self.feature_type))
         return super().transform(X)
 
     def get_feature_names(self):

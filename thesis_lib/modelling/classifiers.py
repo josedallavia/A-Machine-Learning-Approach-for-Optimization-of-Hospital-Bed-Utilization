@@ -1,13 +1,12 @@
 import lightgbm as lgb
 from lightgbm import LGBMClassifier
 from lightgbm import *
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score
 
 
 class LGBM_classifier(LGBMClassifier):
     def __init__(self,objective='binary',metric='auc',is_unbalance=True,max_depth=7, learning_rate=0.1,
-                 num_iterations=100,feature_names='auto'):
+                 num_iterations=100,feature_names='auto', boosting='gbdt',bagging_freq=0,bagging_fraction=1.0):
         self.objective = objective
         self.metric = metric
         self.is_unbalance = is_unbalance
@@ -15,6 +14,9 @@ class LGBM_classifier(LGBMClassifier):
         self.learning_rate = learning_rate
         self.num_iterations = num_iterations
         self.feature_names= feature_names
+        self.boosting = boosting
+        self.bagging_freq = bagging_freq
+        self.bagging_fraction = bagging_fraction
 
     def get_params(self,deep=True):
         return {'objective': self.objective,
@@ -23,12 +25,16 @@ class LGBM_classifier(LGBMClassifier):
                 'max_depth' : self.max_depth,
                 'learning_rate': self.learning_rate,
                 'num_iterations': self.num_iterations,
-                'feature_names': self.feature_names}
+                'feature_names': self.feature_names,
+                'boosting': self.boosting,
+                'bagging_freq': self.bagging_freq,
+                'bagging_fraction': self.bagging_fraction}
 
     def set_params(self, **parameters):
         for parameter, value in parameters.items():
             setattr(self, parameter, value)
         return self
+
     def fit(self, X_train,y_train,X_val=None,y_val=None):
 
         # to record eval results for plotting
@@ -62,48 +68,4 @@ class LGBM_classifier(LGBMClassifier):
     @property
     def feature_importance_(self):
         return self.lgbm_classifier.feature_importance()
-    
-class RFClassifier(RandomForestClassifier):
-    
-    def __init__(self,n_estimators=100, random_state=2020,max_depth=10,max_features='sqrt',verbose=10,
-                 n_jobs=-1,min_samples_leaf=1):
-        self.n_estimators=n_estimators
-        self.random_state=random_state
-        self.max_depth = max_depth
-        self.max_features=max_features
-        self.verbose=verbose
-        self.n_jobs=2
-        self.min_samples_leaf = min_samples_leaf
-
-        super().__init__(n_estimators = self.n_estimators, random_state=self.random_state,
-                         max_depth=self.max_depth, max_features=self.max_features, verbose=self.verbose,
-                         n_jobs=self.n_jobs, min_samples_leaf=self.min_samples_leaf)
-
-    def get_params(self,deep=True):
-        return {'n_estimators': self.n_estimators,
-                'random_state': self.random_state,
-                'max_depth': self.max_depth,
-                'max_features': self.max_features,
-                'verbose': self.verbose,
-                'n_jobs': self.n_jobs}
-
-
-    def set_params(self, **parameters):
-        for parameter, value in parameters.items():
-            setattr(self, parameter, value)
-        return self
-    
-    def fit(self,X,y):
-        super().fit(X,y)
-    
-    def predict(self,X_transf):
-        return self.predict_proba(X_transf)[:,1]
-
-    def score(self, X_transf, y_true):
-        y_pred = self.predict(X_transf)
-        return roc_auc_score(y_true, y_pred)
-
-    @property
-    def feature_importance_(self):
-        return super().feature_importances_
     

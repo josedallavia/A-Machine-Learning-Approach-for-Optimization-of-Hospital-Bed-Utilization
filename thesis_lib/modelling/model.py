@@ -79,19 +79,29 @@ class Model():
 
 
     def fit_classifier(self, **kwargs):
-        if self.classifier_name == 'lgbm':
-            self.classifier = LGBM_classifier(feature_names=self.model_features)
-            self.classifier.set_params(**kwargs)
-        elif self.classifier_name  == 'random_forest':
-            self.classifier = RFClassifier()
-            self.classifier.set_params(**kwargs)
 
-        print('Training classifier')
         if self.classifier_name == 'lgbm':
-            self.classifier.fit(self.X_train,self.y_train,
-                                self.X_val,self.y_val)
-        else:
-            self.classifier.fit(self.X_train, self.y_train)
+            boosting_name = 'gbdt'
+        elif self.classifier_name == 'random_forest':
+            boosting_name = 'rf'
+
+        self.classifier = LGBM_classifier(feature_names=self.model_features)
+
+        #Set boosting type according to classifier name.
+        if self.classifier_name == 'random_forest':
+            self.classifier.set_params(**{'boosting': 'rf',
+                                          'bagging_freq': 1,
+                                          'bagging_fraction': 0.7})
+        elif self.classifier_name == 'lgbm':
+            self.classifier.set_params(**{'boosting': 'gbdt'})
+
+        #set other paramaters based on kwargs if any.
+        self.classifier.set_params(**kwargs)
+
+        #train classifier
+        print('Training classifier')
+        self.classifier.fit(self.X_train,self.y_train,
+                            self.X_val,self.y_val)
 
 
     def fit_best_classifier(self):
@@ -125,14 +135,22 @@ class Model():
 
         print('validation AUC ROC score: ',auc_val)
 
-        print('relative over-fitting: ',abs(auc_train-auc_val)/auc_train)
+        overfitting = abs(auc_train-auc_val)/auc_train
+        print('relative over-fitting: ',overfitting)
+
+        return {'auc_training': auc_train , 'auc_validation': auc_val, 'overfitting':overfitting}
 
     def optimize_hyperparams(self, params_dict, n_iter=10, n_folds=5, search_type='random'):
 
-        if self.classifier_name == 'lgbm':
-            tmp_classifier =  LGBM_classifier()
-        elif self.classifier_name == 'random_forest':
-            tmp_classifier = RFClassifier()
+        tmp_classifier = LGBM_classifier(feature_names=self.model_features)
+
+        # Set boosting type according to classifier name.
+        if self.classifier_name == 'random_forest':
+            tmp_classifier.set_params(**{'boosting': 'rf',
+                                          'bagging_freq': 1,
+                                          'bagging_fraction': 0.7})
+        elif self.classifier_name == 'lgbm':
+            tmp_classifier.set_params(**{'boosting': 'gbdt'})
 
         if search_type == 'random':
             self.model_selection = RandomizedSearchCV(estimator=tmp_classifier,
