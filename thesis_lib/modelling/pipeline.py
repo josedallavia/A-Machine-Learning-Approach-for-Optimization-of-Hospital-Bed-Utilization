@@ -8,6 +8,8 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.impute import SimpleImputer
 from sklearn.feature_extraction.text import TfidfVectorizer
+import sys
+sys.path.append("..")
 import numpy as np
 from thesis_lib.modelling.data import *
 

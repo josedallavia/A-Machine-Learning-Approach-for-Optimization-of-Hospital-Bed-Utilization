@@ -2,6 +2,8 @@ import os
 import pandas as pd
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 from sklearn.model_selection import RandomizedSearchCV
+import sys
+sys.path.append("..")
 #from sklearn.model_selection import GridSearchCV
 from pactools.grid_search import GridSearchCVProgressBar
 from thesis_lib.modelling.data import *
