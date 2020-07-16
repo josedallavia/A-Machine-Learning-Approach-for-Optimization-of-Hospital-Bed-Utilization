@@ -9,7 +9,6 @@ import json
 import pickle as pkl
 import warnings
 warnings.filterwarnings('ignore')
-from tqdm import tqdm
 
 
 def forecast_discharges(date):
@@ -24,7 +23,7 @@ def forecast_discharges(date):
               'lower bound forecast': []}
 
     # load data for the corresponding date
-    data = Data().load('data/hospital_dataset')
+    data = Data().load('data/hospital_dataset',verbose=False)
 
 
     date_data = data.test.X[data.test.X['date'] == date]
@@ -47,7 +46,7 @@ def forecast_discharges(date):
         confidence_thresholds = json.load(json_file)
 
     # Compute forecasts:
-    for confidence_level in tqdm(confidence_thresholds):
+    for confidence_level in confidence_thresholds:
         threshold = confidence_thresholds[confidence_level]
         forecast = sum([1 for prob in predictions if prob > threshold])
 

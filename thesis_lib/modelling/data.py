@@ -5,11 +5,10 @@ class Data():
     def __init__(self,target='discharge'):
         self.target = target
         
-    def load(self,path='data/hospital_dataset'):
-        
-        self.train = Dataset(path,'train',target_col=self.target)
-        self.val = Dataset(path,'validation',target_col=self.target)
-        self.test = Dataset(path,'test',target_col=self.target)
+    def load(self,path='data/hospital_dataset',verbose=True):
+        self.train = Dataset(path,'train',target_col=self.target,verbose=verbose)
+        self.val = Dataset(path,'validation',target_col=self.target,verbose=verbose)
+        self.test = Dataset(path,'test',target_col=self.target,verbose=verbose)
         
         return self
         
@@ -65,16 +64,15 @@ class Data():
 
 
 class Dataset():
-    def __init__ (self, path, dataset_type, target_col):
-        
+    def __init__ (self, path, dataset_type, target_col,verbose=True):
         self.dataset_type = dataset_type
         self.parquets_folder = path
         self.target_col = target_col
 
-        self.X,self.y = self.load_dataset()
+        self.X,self.y = self.load_dataset(verbose)
         self.X_transf = None
         
-    def get_dataset(self, parquets_folder,dataset_type):    
+    def get_dataset(self, parquets_folder,dataset_type,verbose=True):    
     
         path= parquets_folder+'/'
         filenames = ['hospital_train_data.parquet','hospital_val_data.parquet','hospital_test_data.parquet']
@@ -84,21 +82,23 @@ class Dataset():
                 print(file, 'not available in the specified folder')
             else:
                 if '_train_' in file and dataset_type == 'train':
-                    print('Loading dataset: ',file)
+                    if verbose:
+                        print('Loading dataset: ',file)
                     data = pd.read_parquet(path+file)
                 elif '_val_' in file and dataset_type == 'validation':
-                    print('Loading dataset: ',file)
+                    if verbose:
+                        print('Loading dataset: ',file)
                     data = pd.read_parquet(path+file)
                 elif '_test_' in file and dataset_type == 'test':
-                    print('Loading dataset: ',file)
+                    if verbose:
+                        print('Loading dataset: ',file)
                     data = pd.read_parquet(path+file)
         
         return data 
     
-    def load_dataset(self):
-        
+    def load_dataset(self,verbose=True):
         raw_data = self.get_dataset(self.parquets_folder, 
-                                   self.dataset_type)
+                                   self.dataset_type,verbose)
         
         y_data = raw_data[self.target_col]
         X_data = raw_data.drop(self.target_col,axis=1)
