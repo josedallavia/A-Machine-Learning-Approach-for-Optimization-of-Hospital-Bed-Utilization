@@ -11,10 +11,11 @@ def plot_top_categories_mean(df,
         [categorical]).nunique().sort_values(
         by='admission_id', ascending=False).head(n)[categorical]
 
-    df[df[categorical].isin(
+    ax = df[df[categorical].isin(
         categories_top.axes[0])].groupby(
         categorical).mean()[to_plot].sort_values(
         ascending=False).plot.bar(figsize=figsize, title=title, color='blue')
+    ax.set_ylabel('Hours')
 
 
 def plot_top_categories_count(df, categorical, n, figsize=(20, 10), title=None):
@@ -26,7 +27,7 @@ def plot_top_categories_count(df, categorical, n, figsize=(20, 10), title=None):
         categories_top.axes[0])].groupby(
         categorical).count()['admission_id'
     ].sort_values(ascending=False).plot.bar(
-        figsize=figsize, title=title, color='blue')
+        figsize=figsize, title=title, color='blue', ylabel='Observations')
 
 
 def plot_top_categories(df, categorical, n, figsize=(20, 10), title=None):
@@ -38,7 +39,7 @@ def plot_top_categories(df, categorical, n, figsize=(20, 10), title=None):
         'length': 'mean'
     }).sort_values(by='admission_id', ascending=False).plot.bar(
         figsize=figsize,
-        title=['# of admissions by ' + categorical,
+        title=['No. of admissions by ' + categorical,
                'Avg. hospitalization length (hours) by ' + categorical],
         subplots=True, sharex=True, legend=False)
 
@@ -66,8 +67,8 @@ def plot_scatter_length_vs_count(df, dimension, title=None, labeled=False,
             if xlim is None or (x[i] < xlim[1] and y[i] + 50 < ylim[1]):
                 ax.annotate(label[:15], (x[i], y[i] + 50), fontsize=8)
 
-    ax.set_xlabel('# of admissions')
-    ax.set_ylabel('avg. hospitalization length')
+    ax.set_xlabel('No. of admissions')
+    ax.set_ylabel('Avg. hospitalization length')
 
     if xlim:
         ax.set_xlim(xlim)
