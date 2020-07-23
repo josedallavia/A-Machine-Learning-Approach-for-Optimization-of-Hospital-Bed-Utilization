@@ -1,6 +1,6 @@
 import pandas as pd
 
-from thesis_lib.data_processing import *
+from thesis_lib.utils import *
 from thesis_lib.visual import *
 
 from datetime import timedelta
