@@ -183,12 +183,12 @@ class QualityReport:
                             if len(bars_data) > 12:
                                 bars_data[:10].plot.bar(ax = ax, title=variable)
                                 labels= ax.get_xticklabels()
-                                ax.set_xticklabels(labels, rotation=45,)
+                                ax.set_xticklabels([label.get_text()[:15] for label in labels], rotation=45)
 
                             else:
                                 bars_data.plot.bar(ax = ax, title=variable)
                                 labels= ax.get_xticklabels()
-                                ax.set_xticklabels(labels, rotation=45)
+                                ax.set_xticklabels([label.get_text()[:15] for label in labels], rotation=45)
                         else:
                             ax.axis('off')
         plt.show()
